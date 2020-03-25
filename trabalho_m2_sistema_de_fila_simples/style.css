@@ -1,0 +1,49 @@
+.elementoChegada {
+    width: 100px;
+    height: 100px;
+    margin-left: 10px;
+    background-color: gray;
+    z-index: -1;
+}
+
+.chegada {
+    height: 30px;
+    width: 30px;
+    background-color: black;
+    margin-left: 5%;
+
+    position: absolute;
+    top: 50%;
+
+    z-index: 10;
+}
+
+.saida {
+    height: 30px;
+    width: 30px;
+    background-color: black;
+    margin-left: 45%;
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+}
+
+@keyframes animacao_chegada {
+    from {
+        margin-left: 5%;
+    }
+
+    to {
+        margin-left: 45%;
+    }
+}
+
+@keyframes animacao_saida {
+    from {
+        margin-left: 45%;
+    }
+
+    to {
+        margin-left: 85%;
+    }
+}

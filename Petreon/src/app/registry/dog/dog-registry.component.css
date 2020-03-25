@@ -1,0 +1,14 @@
+@import url('../registry.component.css');
+
+#teste {
+  width: inherit;
+  height: inherit;
+}
+
+.div-RdBut {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  margin: inherit;
+}

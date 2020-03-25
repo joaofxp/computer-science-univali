@@ -1,0 +1,37 @@
+<div class="card-img">
+    <img src="./assets/images/imagem_cadastro_user.png" alt="Cadastre-se">
+</div>
+
+<div class="row py-5 m-0">
+    <div class="col-3 offset-1">
+        <img [src]="perfilAnimal.img" alt="" style="border-radius:50%;width:200px;">
+    </div>
+    <div class="col-7">
+
+        <h4>Nome: {{perfilAnimal.nome}}</h4>
+
+        <p>{{perfilAnimal.descricao}}</p>
+
+        <ul class="dsc-animal list-group list-group-horizontal">
+            <li class="list-group-item"><b>Sexo: </b><br> {{perfilAnimal.sexo}}</li>
+            <li class="list-group-item"><b>Porte:</b> <br>  {{perfilAnimal.porte}} </li>
+            <li class="list-group-item"><b>Pelagem:</b> <br>  {{perfilAnimal.pelagem}} </li>
+            <li class="list-group-item"><b>Castrado:</b> <br>  {{perfilAnimal.castrado}} </li>
+            <li class="list-group-item"><b>Localização: </b> <br>  {{perfilAnimal.localizacao}}</li>
+        </ul>
+    </div>
+
+    <div class="col-10 offset-md-2 py-5">
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item"><b>Meta: </b> R$ 660,00</li>
+            <li class="list-group-item"><b>Valor arrercadado: </b> R$ 100</li>
+            <li class="list-group-item"><b>Criação da vaquinha: </b> 12/12/12</li>
+            <li class="list-group-item"><b>Padrinhos:</b> Joãozinho</li>
+        </ul>
+    </div>
+
+    <div class="botoes">
+        <button routerLink="/OferecerAjuda" type="submit">QUERO OFERECER AJUDA</button>
+    </div>
+
+</div>

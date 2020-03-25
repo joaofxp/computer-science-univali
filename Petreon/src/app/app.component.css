@@ -1,0 +1,119 @@
+html {
+    line-height: 1.15;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif,  !important;
+    background-color: #F0F3F2;
+    margin: 0px 0px 0px 0px;
+}
+
+.portfolio .botao,
+.orcamento .conteudo .row .form-finalizar-orcamento button,
+.orcamento .conteudo .grupo-botoes button,
+.header,
+.header .nav ul li a,
+.header .icons i,
+.header .nav-bars,
+.header .nav-bars i,
+.header .nav-mobile,
+.header .nav-mobile li,
+.header .nav-mobile li .collapse-servicos-mob,
+.header .nav-mobile li .collapse-servicos-mob div,
+.portfolio #instafeed .imagem-feed .img-featured-container .img-backdrop,
+.portfolio #instafeed .imagem-feed .img-featured-container .description-container,
+.orcamento .timeline .bullets .dot,
+.orcamento .timeline .bullets .active,
+.orcamento .timeline .bullets .complete,
+.orcamento .timeline .bullets .lb,
+.orcamento .timeline .labels .lb,
+.contato .formulario form button,
+.footer .rodape .links-footer li a,
+.footer .rodape .formulario form button {
+    transition: 0.4s;
+}
+
+.title-petreon {
+    font-family: 'Caudex', serif;
+    color: #ED9111;
+    font-size: 36px;
+    padding-bottom: 10px;
+}
+
+.header .nav ul li a {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    color: #FFFFFF;
+    font-weight: bold;
+    margin-right: 4px;
+    text-decoration: none;
+}
+
+.header .nav ul li a:hover {
+    color: #ED9111;
+}
+
+.header .icons {
+    display: block;
+    margin-top: 28px;
+    margin-left: 20px;
+}
+
+.header .nav ul li {
+    padding: 0 20px;
+    display: inline-block;
+}
+
+.header .nav ul {
+    display: block;
+}
+
+.header .logo {
+    width: auto;
+}
+
+.header .nav {
+    display: block;
+    margin-top: 28px;
+}
+
+.header {
+    width: 100%;
+    position: fixed;
+    padding: 5px 100px;
+    height: 80px;
+    background-color: #000000;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.smalHeader {
+    position: fixed;
+    background-color: #000000;
+    width: 100%;
+}
+
+.slider img {
+    width: 100%;
+    height: auto;
+}
+
+.header .logo {
+    width: auto;
+}
+
+.fa {
+    color: white;
+    margin: 0px 7px 0px 7px;
+}
+
+.fa:hover {
+    color: #ED9111;
+    margin: 0px 7px 0px 7px;
+}
+
+.footer {
+    background-color: #000000;
+    color: #ED9111;
+    margin-top: 32px;
+}

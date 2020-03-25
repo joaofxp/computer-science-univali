@@ -1,0 +1,125 @@
+<html>
+
+<head> </head>
+
+<body>
+    <script>
+        let separador = " | ";
+        let limite = Math.pow(10, -3);
+        let filtroArredondamento = 4;
+        let body = document.getElementsByTagName("body")[0];
+
+        let obj = {
+            n: 0,
+            Xi: 1,
+            fXi: -0.8394,
+            E: limite + 1,
+        }
+
+
+        let xAnterior = null;
+        let fxAnterior = null;
+
+        body.innerHTML +=
+            `
+            <hr> 
+            f(x) = Raiz (x) - 5 * e^-x | E < 10 ^-3
+            <hr>
+        `;
+
+        for (var key in obj) {
+            let valor = key;
+
+            body.innerHTML += "     " + valor + "   |       ";
+        }
+
+        while (obj.E > Math.pow(10, -3)) {
+            for (var key in obj) {
+                obj[key] = Number(obj[key]);
+            }
+
+            if (obj.E === (limite + 1) && xAnterior === null) {
+                obj.E = undefined;
+
+                desenharLinhaTabela();
+
+                obj.n++;
+
+                xAnterior = obj.Xi;
+                fxAnterior = obj.fXi;
+
+                obj.Xi = 2;
+                obj.fXi = 0.7375;
+
+                desenharLinhaTabela();
+
+                obj.n++;
+            }
+
+
+            obj.Xi = arredondarNumero(calcularXi());
+            obj.fXi = arredondarNumero(calcularfXi());
+
+            if (xAnterior !== null && fxAnterior !== null) {
+                obj.E = Math.abs((obj.Xi - xAnterior) / obj.Xi);
+            }
+
+            desenharLinhaTabela();
+
+            obj.n++;
+
+            if (obj.E === undefined || isNaN(obj.E)) {
+                obj.E = limite + 1;
+                xAnterior = obj.Xi;
+                fxAnterior = obj.fXi;
+            }
+
+            if (obj.n === 30) {
+                break;
+            }
+        }
+
+        body.innerHTML += "<hr> FIM, resposta final: " + xAnterior;
+
+        function salvarValoresAnteriores() {
+            xAnterior = obj.Xi;
+            fxAnterior = obj.fXi;
+        }
+
+        function calcularXi() {
+            console.log(xAnterior + " | " + obj.fXi + " | " + obj.Xi + " | " + fxAnterior + " = " + arredondarNumero(((
+                xAnterior * obj.fXi) - (obj.Xi * fxAnterior)) / (obj.fXi - fxAnterior)));
+            var resultado = ((xAnterior * obj.fXi) - (obj.Xi * fxAnterior)) / (obj.fXi - fxAnterior);
+            salvarValoresAnteriores();
+            return resultado;
+        }
+
+        function calcularfXi() {
+            return (Math.sqrt(obj.Xi)) - (5 * Math.pow(Math.E, -obj.Xi));
+        }
+
+        function arredondarNumero(num) {
+            return Number(num).toPrecision(filtroArredondamento);
+        }
+
+        function desenharLinhaTabela() {
+            pularLinha();
+
+            for (var key in obj) {
+                let valor = obj[key];
+
+                if (String(valor).length >= filtroArredondamento) {
+                    valor = Number(valor).toPrecision(filtroArredondamento);
+                }
+
+                body.innerHTML += valor + "         |       ";
+            }
+        }
+
+        function pularLinha() {
+            body.innerHTML += "<br>";
+        }
+    </script>
+</body>
+
+</html>

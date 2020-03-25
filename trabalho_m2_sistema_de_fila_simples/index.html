@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Sistema de Fila Simples</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <main>
+        <div class="container py-3">
+            <!-- Fazer a interface não funcional apenas para garantir que não tire 0, depois vai implementando aos poucos -->
+
+            <small>*Os valores são dados em segundos</small>
+
+            <div class="form-group">
+                <div class="area-chegadas">
+                    <h5>Tempo entre Chegadas</h5>
+
+                    <div class="row">
+                        <div class="col-7">
+                            <!-- <label for="tipo de distribuição">Tipo</label> -->
+
+                            <ul class="nav nav-pills mb-3" id="pills-chegada-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-chegada-deterministico-tab" data-toggle="pill" href="#pills-chegada-deterministico" role="tab"
+                                        aria-controls="pills-chegada-deterministico" aria-selected="true">
+                                        Determinístico
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-chegada-uniforme-tab" data-toggle="pill" href="#pills-chegada-uniforme" role="tab" aria-controls="pills-chegada-uniforme"
+                                        aria-selected="true">
+                                        Uniforme
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-chegada-triangular-tab" data-toggle="pill" href="#pills-chegada-triangular" role="tab" aria-controls="pills-chegada-triangular"
+                                        aria-selected="false">
+                                        Triangular
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-chegada-exponencial-tab" data-toggle="pill" href="#pills-chegada-exponencial" role="tab" aria-controls="pills-chegada-exponencial"
+                                        aria-selected="false">
+                                        Exponencial
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-chegada-normal-tab" data-toggle="pill" href="#pills-chegada-normal" role="tab" aria-controls="pills-chegada-normal"
+                                        aria-selected="false">
+                                        Normal
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="offset-1 col-2">
+                            <button type="button" onclick="executarSimulacao();" class="btn btn-success">Gerar Simulação</button>
+                            <br>
+                            <br>
+                            <div class="position-absolute">
+                                <label for="">Multiplicador (quanto menor, mais rápido)</label>
+
+                                <input type="number" name="multiplicador" id="multiplicador" class="form-control" value="0.5" min="0,01">
+                            </div>
+
+                        </div>
+                        <div class="col-2">
+                            <button type="button" onclick="pausarSimulacao();" class="btn btn-danger">Parar</button>
+                        </div>
+
+                    </div>
+
+                    <div class="tab-content" id="pills-chegada-tabContent">
+                        <div class="tab-pane fade show active" id="pills-chegada-deterministico" role="tabpanel" aria-labelledby="pills-chegada-deterministico-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor (segundos)</label>
+                                    <input type="number" name="chegadaDeterministico" id="chegadaDeterministico" class="form-control" value="1" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade show" id="pills-chegada-uniforme" role="tabpanel" aria-labelledby="pills-chegada-uniforme-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Mínimo</label>
+                                    <input type="number" name="chegadaUniformeInicial" id="chegadaUniformeInicial" class="form-control" value="2" required="required">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="">Máximo</label>
+                                    <input type="number" name="chegadaUniformeFinal" id="chegadaUniformeFinal" class="form-control" value="10" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-chegada-triangular" role="tabpanel" aria-labelledby="pills-chegada-triangular-tab">
+                            <div class="row m-0">
+                                <div class="col-2">
+                                    <label for="">Valor min.</label>
+                                    <input type="number" name="chegadaTriangularMin" id="chegadaTriangularMin" class="form-control" value="1" required="required">
+                                </div>
+
+                                <div class="col-2">
+                                    <label for="">Moda</label>
+                                    <input type="number" name="chegadaTriangularModa" id="chegadaTriangularModa" class="form-control" value="2" required="required">
+                                </div>
+
+                                <div class="col-2">
+                                    <label for="">Valor max.</label>
+                                    <input type="number" name="chegadaTriangularMax" id="chegadaTriangularMax" class="form-control" value="5" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-chegada-exponencial" role="tabpanel" aria-labelledby="pills-chegada-exponencial-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor médio</label>
+                                    <input type="number" name="chegadaExponencialValorMedio" id="chegadaExponencialValorMedio" class="form-control" value="1" required="required">
+                                </div>
+                                <div class="col-3">
+                                    <label for="">Valor Minimo</label>
+                                    <input type="number" name="chegadaExponencialValorMinimo" id="chegadaExponencialValorMinimo" class="form-control" value="0" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-chegada-normal" role="tabpanel" aria-labelledby="pills-chegada-normal-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor médio</label>
+                                    <input type="number" name="chegadaNormalValorMedio" id="chegadaNormalValorMedio" class="form-control" value="1" required="required">
+                                </div>
+                                <div class="col-3">
+                                    <label for="">Valor de variância</label>
+                                    <input type="number" name="chegadaNormalValorDeVariancia" id="chegadaNormalValorDeVariancia" class="form-control" value="2" required="required">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="area-servico">
+                    <h5>Tempo de Serviço</h5>
+                    <div class="row">
+
+                        <div class="col-12">
+                            <!-- <label for="tipo de distribuição">Tipo</label> -->
+
+                            <ul class="nav nav-pills mb-3" id="pills-servico-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-servico-deterministico-tab" data-toggle="pill" href="#pills-servico-deterministico" role="tab"
+                                        aria-controls="pills-servico-deterministico" aria-selected="true">
+                                        Determinístico
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-servico-uniforme-tab" data-toggle="pill" href="#pills-servico-uniforme" role="tab" aria-controls="pills-servico-uniforme"
+                                        aria-selected="true">
+                                        Uniforme
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-servico-triangular-tab" data-toggle="pill" href="#pills-servico-triangular" role="tab" aria-controls="pills-servico-triangular"
+                                        aria-selected="false">
+                                        Triangular
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-servico-exponencial-tab" data-toggle="pill" href="#pills-servico-exponencial" role="tab" aria-controls="pills-servico-exponencial"
+                                        aria-selected="false">
+                                        Exponencial
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-servico-normal-tab" data-toggle="pill" href="#pills-servico-normal" role="tab" aria-controls="pills-servico-normal"
+                                        aria-selected="false">
+                                        Normal
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="pills-servico-tabContent">
+                        <div class="tab-pane fade show active" id="pills-servico-deterministico" role="tabpanel" aria-labelledby="pills-servico-deterministico-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor (segundos)</label>
+                                    <input type="number" name="servicoDeterministico" id="servicoDeterministico" class="form-control" value="3" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade show" id="pills-servico-uniforme" role="tabpanel" aria-labelledby="pills-servico-uniforme-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Mínimo</label>
+                                    <input type="number" name="servicoUniformeInicial" id="servicoUniformeInicial" class="form-control" value="0" required="required">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="">Máximo</label>
+                                    <input type="number" name="servicoUniformeFinal" id="servicoUniformeFinal" class="form-control" value="1" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-servico-triangular" role="tabpanel" aria-labelledby="pills-servico-triangular-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor min.</label>
+                                    <input type="number" name="servicoTriangularMin" id="servicoTriangularMin" class="form-control" value="1" required="required">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="">Moda</label>
+                                    <input type="number" name="servicoTriangularModa" id="servicoTriangularModa" class="form-control" value="2" required="required">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="">Valor max.</label>
+                                    <input type="number" name="servicoTriangularMax" id="servicoTriangularMax" class="form-control" value="5" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-servico-exponencial" role="tabpanel" aria-labelledby="pills-servico-exponencial-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor médio</label>
+                                    <input type="number" name="servicoExponencialValorMedio" id="servicoExponencialValorMedio" class="form-control" value="1" required="required">
+                                </div>
+                                <div class="col-3">
+                                    <label for="">Valor Minimo</label>
+                                    <input type="number" name="servicoExponencialValorMinimo" id="servicoExponencialValorMinimo" class="form-control" value="0" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-servico-normal" role="tabpanel" aria-labelledby="pills-servico-normal-tab">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                    <label for="">Valor médio</label>
+                                    <input type="number" name="servicoNormalValorMedio" id="servicoNormalValorMedio" class="form-control" value="1" required="required">
+                                </div>
+                                <div class="col-3">
+                                    <label for="">Valor de variância</label>
+                                    <input type="number" name="servicoNormalValorDeVariancia" id="servicoNormalValorDeVariancia" class="form-control" value="2" required="required">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="area-limites">
+                    <!-- <div class="col-3">
+                        <label for="">Velocidade Multiplicador Animação</label>
+                        <input type="number" name="linhasQtd" id="linhasQtd" class="form-control" min="1" value="1" required="required">
+                    </div> -->
+                    <h5>Limites (0 = infinito)</h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="d-inline-block" for="">Limite Fila</label>
+                            <input type="number" name="limiteFila" id="limiteFila" class="form-control d-inline-block ml-2" style="width:30%" value="0" min="0" required="required">
+                        </div>
+                        <div class="col-4">
+                            <label class="d-inline-block" for="">Limite Chegadas</label>
+                            <input type="number" name="limiteChegadas" id="limiteChegadas" class="form-control d-inline-block ml-2" style="width:30%" value="10" min="0" required="required">
+                        </div>
+                        <div class="col-4">
+                            <label class="d-inline-block" for="">Limite Duração da Replicação</label>
+                            <input type="number" name="limiteDuracaoReplicacao" id="limiteDuracaoReplicacao" class="form-control d-inline-block ml-2" style="width:30%" value="0" min="0"
+                                required="required">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="area-relatorios row">
+                <h5>Relatórios e dados gerados</h5>
+
+                <br>
+
+                <div class="col-12">
+                    <ul class="nav nav-pills mb-3" id="pills-relatorios-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-relatorios-global-tab" data-toggle="pill" href="#pills-relatorios-global" role="tab" aria-controls="pills-relatorios-global"
+                                aria-selected="true">
+                                Variáveis Globais
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " id="pills-relatorios-chegadas-tab" data-toggle="pill" href="#pills-relatorios-chegadas" role="tab" aria-controls="pills-relatorios-chegadas"
+                                aria-selected="true">
+                                Tempos de Chegadas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " id="pills-relatorios-servico-tab" data-toggle="pill" href="#pills-relatorios-servico" role="tab" aria-controls="pills-relatorios-servico"
+                                aria-selected="true">
+                                Tempos de Serviço
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="pills-relatorios-tabContent">
+                        <div class="tab-pane fade show active" id="pills-relatorios-global" role="tabpanel" aria-labelledby="pills-relatorios-global-tab">
+                            <div class="col-12">
+                                <table class="table table-striped table-responsive" id="table-variaveis">
+                                    <tbody>
+                                        <tr>
+                                            <th>Número Médio de Entidades na Fila</th>
+                                            <td><span class="qtdNumMedioEntidadesNaFila"></span></td>
+
+                                            <th></th>
+                                            <th></th>
+
+                                            <th>Taxa Média de Ocupação do Servidor</th>
+                                            <td><span class="qtdTaxaOcupacao"></span></td>
+
+                                            <th></th>
+                                            <th></th>
+
+                                            <th>Tempo Médio de uma Entidade na Fila</th>
+                                            <td><span class="qtdTempoMedioEntidadeFila"></span></td>
+                                        </tr>
+                                        <tr>
+
+                                            <th>Tempo médio no sistema:</th>
+                                            <td><span class="qtdTempoMedioNoSistema"></span></td>
+
+                                            <th></th>
+                                            <th></th>
+
+                                            <th>Entidades que entraram</th>
+                                            <td><span class="qtdChegadas"></span></td>
+
+                                            <th></th>
+                                            <th></th>
+
+                                            <th>Entidades que sairam</th>
+                                            <td><span class="qtdSaidas"></span></td>
+
+                                        </tr>
+                                        <tr>
+                                            <th>Número Máximo de Entidades simultâneas no sistema</th>
+                                            <td><span class="qtdEntidadesSimultaneasMaxima"></span></td>
+
+                                            <th></th>
+                                            <th></th>
+
+                                            <th>Entidades que estão em fila:</th>
+                                            <td><span class="qtdEmFila"></span></td>
+
+                                            <th></th>
+                                            <th></th>
+
+                                            <th>Fila máxima</th>
+                                            <td><span class="qtdFilaMaxima"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tempo do sistema:</th>
+                                            <td><span class="qtdTempoDoSistema"></span></td>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Duração replicação:</th>
+                                            <td><span class="duracaoReplicacao"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade show " id="pills-relatorios-chegadas" role="tabpanel" aria-labelledby="pills-relatorios-chegadas-tab">
+                            <button class="exportarChegada" onclick="exportarTabelaCSV('chegada')">Exportar tabela em TXT</button>
+
+                            <table class="table table-striped  table-responsive" id="table-chegadas" style="height:200px;">
+                                <tbody id="tbody-chegadas"> </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade show " id="pills-relatorios-servico" role="tabpanel" aria-labelledby="pills-relatorios-servico-tab">
+                            <button class="exportarChegada" onclick="exportarTabelaCSV(document.querySelectorAll('servico'))">Exportar tabela em TXT</button>
+
+                            <table class="table table-striped  table-responsive" id="table-servicos" style="height:200px;">
+                                <tbody id="tbody-servicos"> </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="conteudo position-relative" id="conteudo">
+                <hr>
+
+                <h5> Área de animação: </h5>
+
+                <div class="row no-gutters">
+                    <div class="col-2">
+                        <div class="elementoChegada d-flex align-items-center justify-content-center" style="color:#fff">
+                            <h6>chegada</h6>
+                        </div>
+                    </div>
+                    <div class="col-2 offset-3">
+                        <div class="elementoChegada d-flex align-items-center justify-content-center" style="color:#fff">
+                            <h6>serviço</h6>
+                        </div>
+                    </div>
+                    <div class="col-2 offset-3">
+                        <div class="elementoChegada d-flex align-items-center justify-content-center" style="color:#fff">
+                            <h6>saída</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+            </div>
+
+            <!-- <div class="status-programa">
+                <h6>Status do programa</h6>
+                <span style="font-size:14px" id="teste" class="badge badge-light">Parado</span>
+                <span style="font-size:14px" id="teste" class="badge badge-primary">Rodando</span>
+                <span style="font-size:14px" class="badge badge-success">Finalizado</span>
+            </div> -->
+
+        </div>
+
+    </main>
+
+    <script src="./js/jquery-3.4.1.min.js"></script>
+    <script src="./js/popper.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+
+    <script src="./exportarTabela.js"></script>
+    <script src="./geradorAleatorio.js"></script>
+    <script src="./auxiliar.js"></script>
+    <script src="./animacoes.js"></script>
+    <script src="./fila.js"></script>
+    <script src="./contadores.js"></script>
+    <script src="./variaveis.js"></script>
+    <script src="./configurar.js"></script>
+    <script src="./limites.js"></script>
+
+    <script src="./app.js"></script>
+
+</body>
+
+</html>

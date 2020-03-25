@@ -1,0 +1,139 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #fcfaf8;
+}
+
+.content {
+    padding-right: 50px;
+    padding-left: 50px;
+}
+
+.content .box {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #808080;
+    border-width: 1px;
+    border-color: #f9f9f9;
+    border-style: solid;
+    background-color: #ffffff;
+    box-shadow: 3px 3px 5px rgba(128, 128, 128, 0.5);
+    padding: 20px 30px;
+    position: relative;
+}
+
+.content .box h5 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #593f26;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.content .box #barra {
+    height: 5px;
+    width: 100%;
+    background-color: #faf8f5;
+    margin-bottom: 15px;
+    margin-left: 10px;
+}
+
+.dica i {
+    font-size: 16px;
+    padding-top: 3px;
+    color: #ED9111;
+}
+
+.dica p {
+    font-size: 12px;
+    color: #CCBCB3;
+}
+
+.content form textarea {
+    resize: none;
+}
+
+.content form input,
+.content form textarea,
+.content form select {
+    border: 1px solid #faf8f5;
+    background-color: rgb(255, 255, 255) !important;
+    font-size: 14px !important;
+    border-radius: 0px;
+    color: #bfbfbf;
+}
+
+.content form input,
+.content form textarea {
+    padding: 10px 25px;
+}
+
+.content form input:focus,
+.content form textarea:focus,
+.content form select:focus {
+    border: 1px solid #ED9111;
+    background-color: rgb(255, 255, 255);
+    box-shadow: none !important;
+    outline: 2px solid #ED9111 !important;
+    outline-offset: -2px !important;
+}
+
+.content button {
+    margin-top: 10px;
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+.content label {
+    font-family: 'Open Sans', sans-serif;
+    color: #afafaf;
+}
+
+::-webkit-input-placeholder {
+    color: #bfc0c1 !important;
+}
+
+::-moz-placeholder {
+    color: #bfc0c1 !important;
+}
+
+:-ms-input-placeholder {
+    color: #bfc0c1 !important;
+}
+
+::placeholder {
+    color: #bfc0c1 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    color: #bfbfbf !important;
+}
+
+.card-img img {
+    width: 100%;
+    height: auto;
+}
+
+.botao-submit button{
+    font-size: 14px;
+    color: white;
+    letter-spacing: 1.8px;
+    background-color: #ccc;
+    border-radius: 25px;
+    border: none;
+    box-shadow: 0px 4px 0px 0px rgba(0, 0, 0, 0.12);
+    text-transform: uppercase;
+}
+
+.botao-submit button:hover {
+    background-color: #808080;
+    text-decoration: none;
+    cursor: pointer;
+}

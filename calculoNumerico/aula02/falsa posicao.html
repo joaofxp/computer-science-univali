@@ -1,0 +1,97 @@
+<html>
+<head> </head>
+<body>
+    <script>
+        let separador = " | ";
+        let limite = Math.pow(10, -2);
+        let filtroArredondamento = 4;
+        let body = document.getElementsByTagName("body")[0];
+
+        body.innerHTML += "<hr> x * log(x) -1 = 0 <hr>";
+
+        let obj = {
+            contador: 0,
+            a: 2,
+            b: 3,
+            Xi: 2.480,
+            fA: -0.3979,
+            fB: 0.4314,
+            fXi: -0.02176,
+            E: limite + 1,
+        }
+
+        let xAnterior = null;
+
+        for (var key in obj) {
+            let valor = key;
+
+            body.innerHTML += valor + "                   |                             ";
+        }
+
+        body.innerHTML += "<br>";
+
+        while (obj.E > limite) {
+            for (var key in obj) {
+                obj[key] = Number(obj[key]);
+            }
+
+            if (obj.E === (limite + 1) && xAnterior === null) {
+                obj.E = undefined;
+            }
+
+            body.innerHTML += "<br>";
+
+            obj.fA = (obj.a * Math.log10(obj.a)) - 1;
+            obj.fA = Number(obj.fA).toPrecision(filtroArredondamento);
+
+            obj.fB = (obj.b * Math.log10(obj.b)) - 1;
+            obj.fB = Number(obj.fB).toPrecision(filtroArredondamento);
+
+            obj.Xi = ((obj.a * obj.fB) - (obj.b * obj.fA)) / (obj.fB - obj.fA);
+            obj.Xi = Number(obj.Xi).toPrecision(filtroArredondamento);
+
+            obj.fXi = obj.Xi * Math.log10(obj.Xi) - 1;
+            obj.fXi = Number(obj.fXi).toPrecision(filtroArredondamento);
+
+            if (xAnterior !== null) {
+                obj.E = Math.abs((obj.Xi - xAnterior) / obj.Xi);
+                xAnterior = obj.Xi;
+            }
+
+            desenharLinhaTabela();
+
+            if ((obj.fA * obj.fXi) > 0)
+                obj.a = obj.Xi;
+            else {
+                obj.b = obj.Xi;
+            }
+
+            obj.contador++;
+
+            if (obj.E === undefined || isNaN(obj.E)) {
+                obj.E = limite + 1;
+                xAnterior = obj.Xi;
+            }
+
+            if (obj.contador === 30)
+                break;
+
+        }
+
+        body.innerHTML += "<hr> FIM, resposta final: " + xAnterior;
+
+        function desenharLinhaTabela() {
+            for (var key in obj) {
+                let valor = obj[key];
+
+                if (String(valor).length >= filtroArredondamento) {
+                    valor = Number(valor).toPrecision(filtroArredondamento);
+                }
+
+                body.innerHTML += valor + "         |       ";
+            }
+        }
+    </script>
+</body>
+
+</html>

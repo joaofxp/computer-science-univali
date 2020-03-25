@@ -1,0 +1,53 @@
+
+Número Médio de Entidades na Fila = ((taxa de chegadas) ^2)/ (taxas de serviço * (taxas de serviço - taxas de chegada))
+    o cálculo de uma média ponderada, cujos pesos serão parcelas (percentuais) do tempo total de observação (tempo simulado) nos quais a variável n.º de elementos na fila, permaneceu em determinado estado.
+    precisa calcular a cada nova entrada na fila ou chegada, verificar
+
+Taxa Média de Ocupação dos Servidores = taxa de chegadas / taxa de serviço (é pra ficar 1, por nunca parar)
+    (soma do tempo livre) / (tempo final do serviço)
+    tempo livre = tempo até a primeira chegada e/ou a próxima acntecer
+    salvar tempo de relogio para fazer o tempo livre
+
+Tempo Médio de uma Entidade na Fila
+    soma dos tempos de espera na fila / numero total de clientes
+
+Tempo Médio no Sistema
+    (soma dos tempos dos clientes no sistema) / (qtd de clientes)
+    tempo cliente no sistema = tempo de serviço do cliente - tempo do cliente na fila
+
+Contador de Entidades - ok
+    igual a quantidade de chegadas
+
+Número máximo de entidades simultâneas no sistema - ok
+    maximo entre a diferença de quantos entraram no serviço e sairam
+
+
+transformar tempo para segundos
+
+numero maximo de chegada
+limitar fila
+limite de chegadas
+limite duracao da replicação 
+---
+
+inserir os tempos que ficou em fila
+
+inserir quantos estão na Fila
+
+e inserir quantos passaram pela fila
+
+salvar tempo de relogio para fazer o tempo livre
+
+
+
+p = 3 / 4 = 0.75
+
+p = 0.75
+
+medio no sistema = 0.75 / 1 - 0.75 = 3
+
+///
+
+
+ou ja na hora da chegada checa se tem fila no serviço e adicoina a entidade na fila já pra executar dps
+quando o servico = false

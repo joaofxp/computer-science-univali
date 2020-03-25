@@ -1,0 +1,69 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <script>
+        let separador = " | ";
+
+        let limite = Math.pow(10, -5);
+        let filtroArredondamento = 4;
+        let body = document.getElementsByTagName("body")[0];
+
+        let obj = {
+            contador: 0,
+            a: 5,
+            b: 6,
+            Xi: 5.393279436240765,
+            fA: -0.024652019483081128,
+            fB: 0.038031195583341046,
+            fXi: 0.004798633505072689,
+            E: limite + 1,
+        }
+
+        let xAnterior = null;
+
+        while (obj.E > limite) {
+            for (var key in obj) {
+                let valor = obj[key];
+
+                if (String(valor).length >= filtroArredondamento) {
+                    valor = Number(valor).toPrecision(filtroArredondamento);
+                }
+
+                body.innerHTML += valor + "         |       ";
+            }
+
+            obj.fA = 0.1 - (1 + obj.a + (obj.a * obj.a) / 2) * Math.exp(-obj.a);
+            obj.fB = 0.1 - (1 + obj.b + (obj.b * obj.b) / 2) * Math.exp(-obj.b);
+            obj.Xi = ((obj.a * obj.fB) - (obj.b * obj.fA)) / (obj.fB - obj.fA);
+            obj.fXi = 0.1 - (1 + obj.Xi + (obj.Xi * obj.Xi) / 2) * Math.exp(-obj.Xi);
+
+            if (xAnterior !== null) {
+                obj.E = (Math.abs(obj.Xi - xAnterior)) / obj.Xi;
+            }
+
+            xAnterior = obj.Xi;
+
+            if ((obj.fA * obj.fXi) < 0)
+                obj.b = obj.Xi;
+            else
+                obj.a = obj.Xi;
+
+            if (obj.E === (limite + 1))
+                obj.E = undefined;
+
+            if (obj.E === undefined)
+                obj.E = limite + 1;
+
+            body.innerHTML += "<br>";
+            obj.contador++;
+        }
+
+        body.innerHTML += "FIM";
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<html>
+
+<head> </head>
+
+<body>
+    <script>
+        let separador = " | ";
+        let limite = Math.pow(10, -3);
+        let filtroArredondamento = 4;
+        let body = document.getElementsByTagName("body")[0];
+
+        let obj = {
+            n: 0,
+            Xi: 0.5,
+            fXi: 1.862,
+            fDXi: -3.566,
+            E: limite + 1,
+        }
+
+        let xAnterior = null;
+
+        body.innerHTML +=
+            `
+            <hr>
+            f(x) = 4 cos(x) - e^x = 0 | f'(x) = -4 sen(x) - e^x =  0 | E < 10 ^-3
+            <hr>
+        `;
+
+        pularLinha();
+
+        for (var key in obj) {
+            let valor = key;
+
+            body.innerHTML += "     " + valor + "   |       ";
+        }
+
+        body.innerHTML += (0.005968 < 0.001);
+
+        while (obj.E > Math.pow(10,-3)) {
+            for (var key in obj) {
+                obj[key] = Number(obj[key]);
+            }
+
+            if (obj.E === (limite + 1) && xAnterior === null) {
+                obj.E = undefined;
+            }
+
+            desenharLinhaTabela();
+
+            obj.Xi = arredondarNumero(calcularXi());
+            obj.fXi = arredondarNumero(calcularfXi());
+            obj.fDXi = arredondarNumero(calcularfDXi());
+
+            if (xAnterior !== null) {
+                obj.E = Math.abs((obj.Xi - xAnterior) / obj.Xi);
+                xAnterior = obj.Xi;
+            }
+
+            obj.n++;
+
+            if (obj.E === undefined || isNaN(obj.E)) {
+                obj.E = limite + 1;
+                xAnterior = obj.Xi;
+            }
+
+            if (obj.n === 30) {
+                break;
+            }
+        }
+
+        desenharLinhaTabela();
+
+        body.innerHTML += "<hr> FIM, resposta final: " + xAnterior;
+
+        function calcularXi(){
+            return obj.Xi - (obj.fXi / obj.fDXi);
+        }
+
+        function calcularfXi() {
+            return 4 * Math.cos(obj.Xi) - Math.pow(Math.E, obj.Xi);
+        }
+
+        function calcularfDXi() {
+            return (-4 * Math.sin(obj.Xi)) - Math.pow(Math.E, obj.Xi);
+        }
+
+        function arredondarNumero(num) {
+            return Number(num).toPrecision(filtroArredondamento);
+        }
+
+        function desenharLinhaTabela() {
+            pularLinha();
+            
+            for (var key in obj) {
+                let valor = obj[key];
+
+                if (String(valor).length >= filtroArredondamento) {
+                    valor = Number(valor).toPrecision(filtroArredondamento);
+                }
+
+                body.innerHTML += valor + "         |       ";
+            }
+        }
+
+        function pularLinha() {
+            body.innerHTML += "<br>";
+        }
+    </script>
+</body>
+
+</html>

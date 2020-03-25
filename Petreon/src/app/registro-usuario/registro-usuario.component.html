@@ -1,0 +1,87 @@
+<div class="card-img">
+    <img src="./assets/images/imagem_cadastro_user.png" alt="Cadastre-se">
+</div>
+
+<div class="content">
+    <div class="row py-5 no-gutters justify-content-between">
+        <div class="box col-md-8">
+            <div class="">
+                <form ngNativeValidate (ngSubmit)="post()">
+                    <h5>Seus dados</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input [(ngModel)]="userForm.name.value" type="text" class="form-control" id="nome"
+                                name="nome" placeholder="Como você se chama?">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input [(ngModel)]="userForm.email.value" type="text" class="form-control" id="email"
+                                name="email" placeholder="Seu endereço de e-mail">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <input [(ngModel)]="userForm.dateBirth.value" type="text" class="form-control"
+                                id="data_nascimento" name="data_nascimento" placeholder="Idade">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <select [(ngModel)]="userForm.sex.value" class="form-control" name="genero">
+                                <option value="" disabled selected>Sexo</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Feminino</option>
+                                <option value="O">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <select class="form-control">
+                                <option value="" disabled selected>Estado</option>
+                                <option>Santa Catarina</option>
+                                <option>Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <select class="form-control">
+                                <option value="" disabled selected>Cidade</option>
+                                <option>Itajaí</option>
+                                <option>Balneário Camboriú</option>
+                                <option>Itapema</option>
+                                <option>Penha</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input [(ngModel)]="userForm.password.value" type="password" name="senha"
+                                class="form-control" id="senha" placeholder="Senha">
+                        </div>
+                    </div>
+                    <h5>Desejo ser:</h5>
+                    <p>Ideia:
+                        Componet1: Padrinho Component2: Apadrinhado
+                    </p>
+
+                    <button type="submit">Submit</button>
+                </form>
+
+                <!-- <form ngNativeValidate (ngSubmit)="addUser()">
+                    <input type="text" [(ngModel)]="userForm.email.value" class="form-control" name="email" placeholder="please enter value for email"><br>
+                    <input type="text" [(ngModel)]="userForm.dateBirth.value" class="form-control" name="data_nascimento" placeholder="please enter value for data_nascimento"><br>
+                    <input type="text" [(ngModel)]="userForm.sex.value" class="form-control" name="sexo" placeholder="please enter value for sexo"><br>
+                    <input type="text" [(ngModel)]="userForm.cpf.value" class="form-control" name="cpf" placeholder="please enter value for cpf"><br>
+                    <input type="text" [(ngModel)]="userForm.name.value" class="form-control" name="nome" placeholder="please enter value for nome"><br>
+                    <input type="text" [(ngModel)]="userForm.phone.value" class="form-control" name="telefone" placeholder="please enter value for telefone"><br>
+                    <input type="text" [(ngModel)]="userForm.password.value" class="form-control" name="password" placeholder="please enter value for password"><br>
+                    <p> Value: {{userForm.email.value}}</p>
+                    <br>
+                    <button type="submit" class="btn btn-info" value="">Add Data to usuario table</button>
+                </form> -->
+            </div>
+        </div>
+        <div class="box col my-5 my-md-0 ml-md-5">
+            <p>
+                Foto de Perfil (Opcional)
+            </p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+<div class="card-img">
+    <img src="./assets/images/img-cards.png" alt="ajudeMe">
+</div>
+
+<body>
+    <div class="content">
+        <div class="row py-5 no-gutters justify-content-between">
+            <div class="box col-md-8">
+                <form ngNativeValidate (ngSubmit)="post()">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h5>Dados do animal</h5>
+                        </div>
+                        <div id="barra"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-7">
+                            <input [(ngModel)]="animalForm.name.value" name="name" id="nome" type="name"
+                                class="form-control form-control-sm" placeholder="Como você o(a) chama?">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <input type="text" class="form-control form-control-sm" id="especie" placeholder="Espécie"
+                                data-toggle="tooltip" data-placement="right" title="Ex.: gato, cachorro...">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <input type="text" class="form-control form-control-sm" id="raca" placeholder="Raça"
+                                data-toggle="tooltip" data-placement="right"
+                                title="Ex.: SRD (sem raça definida), ragdoll, pitbull...">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <select [(ngModel)]="animalForm.sex.value" name="sex" class="form-control form-control-sm">
+                                <option value="" disabled selected>Sexo</option>
+                                <option value="M">Macho</option>
+                                <option value="F">Fêmea</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <select class="form-control form-control-sm">
+                                <option value="" disabled selected>Pelagem</option>
+                                <option>Curta</option>
+                                <option>Longa</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <select [(ngModel)]="animalForm.measurement.value" name="measurement"
+                                class="form-control form-control-sm">
+                                class="form-control form-control-sm">
+                                <option value="" disabled selected>Porte</option>
+                                <option value="P">Pequeno</option>
+                                <option value="M">Médio</option>
+                                <option value="G">Grande</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h5 class="mt-4">Algumas perguntinhas rápidas</h5>
+                        </div>
+                        <div id="barra" class="mt-4"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-4">
+                            <label for="exampleFormControlSelect1">É
+                                castrado?</label>
+                            <!-- VER ESSE LINK: https://codepen.io/AngelaVelasquez/details/BWXbxP -->
+                            <div class="form-group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="castrado" id="sim_castrado"
+                                        value="s">
+                                    <label class="form-check-label" for="sim_castrado">
+                                        Sim
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="castrado" id="nao_castrado"
+                                        value="n">
+                                    <label class="form-check-label" for="nao_castrado">
+                                        Não
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="castrado" id="nsei_castrado"
+                                        value="na" checked>
+                                    <label class="form-check-label" for="nsei_castrado">
+                                        Não sei
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exampleFormControlSelect1">Foi vermifugado?</label>
+                            <div class="form-group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vermifugado" id="sim_vermifugado"
+                                        value="sim_vermifugado">
+                                    <label class="form-check-label" for="sim_vermifugado">
+                                        Sim
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vermifugado" id="nao_vermifugado"
+                                        value="nao_vermifugado">
+                                    <label class="form-check-label" for="nao_vermifugado">
+                                        Não
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vermifugado"
+                                        id="nsei_vermifugado" value="nsei_vermifugado" checked>
+                                    <label class="form-check-label" for="nsei_vermifugado">
+                                        Não sei
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exampleFormControlSelect1">Está vacinado?</label>
+                            <div class="form-group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vacinado" id="sim_vacinado"
+                                        value="sim_vacinado">
+                                    <label class="form-check-label" for="sim_vacinado">
+                                        Sim
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vacinado" id="nao_vacinado"
+                                        value="nao_vacinado">
+                                    <label class="form-check-label" for="nao_vacinado">
+                                        Não
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vacinado" id="nsei_vacinado"
+                                        value="nsei_vacinado" checked>
+                                    <label class="form-check-label" for="nsei_vacinado">
+                                        Não sei
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h5 class="mt-4">Só mais uma coisa...</h5>
+                        </div>
+                        <div id="barra" class="mt-4"></div>
+                    </div>
+                    <div class="form-group">
+                        <textarea [(ngModel)]="animalForm.complement.value" name="complement"
+                            class="form-control form-control-sm" id="sobre" rows="5"
+                            placeholder="Conte-nos mais sobre o seu pet" style="resize: none;"></textarea>
+                    </div>
+                    <div class="botao-submit">
+                        <button type="submit">Enviar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="box col my-5 my-md-0 ml-md-5">
+                <h5>Carregamento de mídia</h5>
+                <div class="d-flex dica">
+                    <div class="p-2">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="p-2 flex-grow-1">
+                        <p>Selecione uma foto que apareça bem a carinha do bichinho, assim os outros poderão conhecê-lo
+                            da maneira que você o vê!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
