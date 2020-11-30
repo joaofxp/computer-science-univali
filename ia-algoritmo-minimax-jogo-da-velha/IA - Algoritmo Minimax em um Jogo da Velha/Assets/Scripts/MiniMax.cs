@@ -1,39 +1,37 @@
-﻿using System; 
+﻿using System;
 using UnityEngine;
 
 public class MiniMax
 {
+    public int aiEscolha;
 
-    public int aiPick;
-    
-    public EndTurnPosition GetBestPosition(int calculateBestRouteFor, int[] gameBoard, int depth)
+    public EndTurnPosition GetMelhorPosicao(int calcularMelhorCaminho, int[] gameBoard, int nível)
     {
-        int isGameOver = IsGameOver(gameBoard);
-        if (IsBoardFull(gameBoard) && isGameOver == 0)  //tie
+        int checkFimDeJogo = CheckFimDeJogo(gameBoard);
+        if (tabuleiroCompleto(gameBoard) && checkFimDeJogo == 0)
         {
             return new EndTurnPosition(0);
         }
-        else if (isGameOver == 10)  //win
+        else if (checkFimDeJogo == 10)
         {
-            return new EndTurnPosition(10 - depth);
+            return new EndTurnPosition(10 - nível);
         }
-        else if (isGameOver == -10) //lose
+        else if (checkFimDeJogo == -10)
         {
-            return new EndTurnPosition(depth - 10);
+            return new EndTurnPosition(nível - 10);
         }
-        depth++;
-        EndTurnPosition levelBestPosition = createEndPositionForLevel(calculateBestRouteFor);
-        //iterate over this tree level (all possible moves for the current game state)
+        nível++;
+        EndTurnPosition levelBestPosition = CriarNoFolhaPorNivel(calcularMelhorCaminho);
+
         for (int boardPosition = 0; boardPosition < gameBoard.Length; boardPosition++)
         {
-            //if current board position isnt filled by X or O
             if (gameBoard[boardPosition] == 0)
             {
-                gameBoard[boardPosition] = calculateBestRouteFor;
-                //invert turns between the opponents by multiplying by -1, clone the board (pass by value) so it wont reflect in other decisions on same level
-                EndTurnPosition newPosition = GetBestPosition(calculateBestRouteFor * -1, (int[])gameBoard.Clone(), depth);
-                //opponent to the AI - minimizes the result
-                if (aiPick != calculateBestRouteFor)
+                gameBoard[boardPosition] = calcularMelhorCaminho;
+                //inverte o turno entre os jogadores, multiplicando por -1, clonando o tabuleiro (por parâmetro) para não refletir no mesmo nível de decisão do outro jogador
+                EndTurnPosition newPosition = GetMelhorPosicao(calcularMelhorCaminho * -1, (int[])gameBoard.Clone(), nível);
+                //oponente - minimizar resultado
+                if (aiEscolha != calcularMelhorCaminho)
                 {
                     if (newPosition.score <= levelBestPosition.score)
                     {
@@ -43,25 +41,24 @@ public class MiniMax
                 }
                 else
                 {
-                    //AI - maximizes the result
+                    //AI - maximizar resultado
                     if (newPosition.score >= levelBestPosition.score)
                     {
                         levelBestPosition.position = boardPosition;
                         levelBestPosition.score = newPosition.score;
                     }
                 }
-                //clears the selection that was made so next iteration (which is a node in same tree level) represents the board without it - the next permutation
+                //limpa a seleção para nao atrapalhar  aproxima iteração do oponente (que é no mesmo nível de profundidade)
                 gameBoard[boardPosition] = 0;
             }
         }
         return levelBestPosition;
     }
 
-    private EndTurnPosition createEndPositionForLevel(int calculateBestRouteFor)
+    private EndTurnPosition CriarNoFolhaPorNivel(int calcularMelhorCaminho)
     {
         EndTurnPosition levelBestPosition = new EndTurnPosition();
-        //set default values for AI and opponent so they always pick first position returned to override default
-        if (aiPick != calculateBestRouteFor)
+        if (aiEscolha != calcularMelhorCaminho)
         {
             levelBestPosition.score = int.MaxValue;
         }
@@ -72,7 +69,7 @@ public class MiniMax
         return levelBestPosition;
     }
 
-    private bool IsBoardFull(int[] gameBoard)
+    private bool tabuleiroCompleto(int[] gameBoard)
     {
         foreach (int gameNode in gameBoard)
         {
@@ -84,57 +81,54 @@ public class MiniMax
         return true;
     }
 
-    /// <summary>
-    /// Checks if the current status of the game board is an end game
-    /// </summary>
-    private int IsGameOver(int[] gameBoard)
+    private int CheckFimDeJogo(int[] gameBoard)
     {
         //win = 10, lose = -10, tie = 0
         //X == 1, O == -1
 
         int isWinRow = 0;
-        int isWinForwardDiagonal = 0;   // /
-        int isWinBackDiagonal = 0;      // \
+        int isWinForwardDiagonal = 0;
+        int isWinBackDiagonal = 0;
         int rowNumber = 1;
         int rowSize = (int)Math.Sqrt(gameBoard.Length);
         int[] isWinColumnArr = new int[rowSize];
-        int winCondition = CreateWinCondition(aiPick);
+        int winCondition = CriarCondicaoVitoria(aiEscolha);
         int loseCondition = winCondition * -1;
 
         for (int i = 0; i < gameBoard.Length; i++)
         {
-            rowNumber = IsNewRow(rowSize, i) ? ++rowNumber : rowNumber;
-            isWinRow = ResetWinConditionForRow(isWinRow, rowSize, i);
+            rowNumber = ChecarNovaLinha(rowSize, i) ? ++rowNumber : rowNumber;
+            isWinRow = ResetarCondicoesDeVitoria(isWinRow, rowSize, i);
 
-            CalculateIsColumnWin(gameBoard, rowSize, isWinColumnArr, i);
-            isWinRow = CalculateIsRowWin(gameBoard, isWinRow, i);
-            isWinBackDiagonal = CalculateIsBackDiagonalWin(gameBoard, isWinBackDiagonal, rowNumber, rowSize, i);
-            isWinForwardDiagonal = CalculateIsForwardDiagonalWin(gameBoard, isWinForwardDiagonal, rowNumber, rowSize, i);
+            CalcularVitoriaPorColuna(gameBoard, rowSize, isWinColumnArr, i);
+            isWinRow = CalcularVitoriaPorLinha(gameBoard, isWinRow, i);
+            isWinBackDiagonal = CalcularVitoriaPorDiagonalTraseira(gameBoard, isWinBackDiagonal, rowNumber, rowSize, i);
+            isWinForwardDiagonal = CalcularVitoriaPorDiagonalFrontal(gameBoard, isWinForwardDiagonal, rowNumber, rowSize, i);
 
             if (isWinForwardDiagonal == winCondition || isWinBackDiagonal == winCondition || isWinRow == winCondition || isWinColumnArr[i % rowSize] == winCondition)
             {
-                return 10; //win
+                return 10;
             }
             else if (isWinForwardDiagonal == loseCondition || isWinBackDiagonal == loseCondition || isWinRow == loseCondition || isWinColumnArr[i % rowSize] == loseCondition)
             {
-                return -10; //lose
+                return -10;
             }
         }
-        return 0; //tie or nothing (nothing = board isnt full yet)
+        return 0;
     }
 
-    private void CalculateIsColumnWin(int[] gameBoard, int rowSize, int[] isWinColumnArr, int i)
+    private void CalcularVitoriaPorColuna(int[] gameBoard, int rowSize, int[] isWinColumnArr, int i)
     {
         isWinColumnArr[i % rowSize] += gameBoard[i];
     }
 
-    private int CalculateIsRowWin(int[] gameBoard, int isWinRow, int i)
+    private int CalcularVitoriaPorLinha(int[] gameBoard, int isWinRow, int i)
     {
         isWinRow += gameBoard[i];
         return isWinRow;
     }
 
-    private int CalculateIsForwardDiagonalWin(int[] gameBoard, int isWinForwardDiagonal, int rowNumber, int rowSize, int i)
+    private int CalcularVitoriaPorDiagonalFrontal(int[] gameBoard, int isWinForwardDiagonal, int rowNumber, int rowSize, int i)
     {
         if (i != 0 && i == ((rowSize - 1) * rowNumber))
         {
@@ -143,7 +137,7 @@ public class MiniMax
         return isWinForwardDiagonal;
     }
 
-    private int CalculateIsBackDiagonalWin(int[] gameBoard, int isWinBackDiagonal, int rowNumber, int rowSize, int i)
+    private int CalcularVitoriaPorDiagonalTraseira(int[] gameBoard, int isWinBackDiagonal, int rowNumber, int rowSize, int i)
     {
         if ((i == ((rowSize + 1) * (rowNumber - 1))))
         {
@@ -152,26 +146,26 @@ public class MiniMax
         return isWinBackDiagonal;
     }
 
-    private int ResetWinConditionForRow(int isWinRow, int rowSize, int i)
+    private int ResetarCondicoesDeVitoria(int isWinRow, int rowSize, int i)
     {
-        if (IsNewRow(rowSize, i))
+        if (ChecarNovaLinha(rowSize, i))
         {
             isWinRow = 0;
         }
         return isWinRow;
     }
 
-    private bool IsNewRow(int rowSize, int i)
+    private bool ChecarNovaLinha(int rowSize, int i)
     {
         return i != 0 && (i % rowSize) == 0;
-    } 
+    }
 
-    private int CreateWinCondition(int calculateBestRouteFor)
+    private int CriarCondicaoVitoria(int calcularMelhorCaminho)
     {
         int win = 3;
-        if (calculateBestRouteFor == -1)
+        if (calcularMelhorCaminho == -1)
         {
-            win *= calculateBestRouteFor;
+            win *= calcularMelhorCaminho;
         }
         return win;
     }

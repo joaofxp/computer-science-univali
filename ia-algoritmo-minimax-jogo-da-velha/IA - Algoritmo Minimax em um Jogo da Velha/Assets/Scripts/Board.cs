@@ -3,12 +3,12 @@
 public class Board : IEnumerator, IEnumerable
 {
 
-    private BoardPositionChoice[] gameboard;
+    private BoardPositionChoice[] gameBoard;
     int boardPosition = -1;
 
     public Board(int size)
     {
-        gameboard = new BoardPositionChoice[size];
+        gameBoard = new BoardPositionChoice[size];
     }
 
     public IEnumerator GetEnumerator()
@@ -19,12 +19,12 @@ public class Board : IEnumerator, IEnumerable
     public bool MoveNext()
     {
         boardPosition++;
-        return boardPosition < gameboard.Length;
+        return boardPosition < gameBoard.Length;
     }
 
     public bool isBoardPositionEmpty()
     {
-        return gameboard[boardPosition] == 0;
+        return gameBoard[boardPosition] == 0;
     }
 
     public void Reset()
@@ -34,6 +34,6 @@ public class Board : IEnumerator, IEnumerable
 
     public object Current
     {
-        get { return gameboard[boardPosition]; }
+        get { return gameBoard[boardPosition]; }
     }
 }

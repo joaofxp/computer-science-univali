@@ -2,60 +2,63 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Runtime.InteropServices;
 
-/// <summary>
-/// Does general operations that are global, such as calling minimax algo, converting the board from int to string, restarting the game, etc...
-/// </summary>
 public class GameController : MonoBehaviour
 {
-    MiniMax minimaxAlgo = new MiniMax();
-    public GameObject[] positionArr;
-    //opponent to ai
+    MiniMax minimaxAlgoritmo = new MiniMax();
+    public GameObject[] casasArray;
     public static string playersChoice = "";
-    private Dictionary<string, bool> gameBoard; //TODO: fill this with the gameboard postions and if they are clicked - send for minimax
-    //player
+    private Dictionary<string, bool> gameBoard;
     public Dictionary<BoardPossibleWinScenarios, int> playerBoard = new Dictionary<BoardPossibleWinScenarios, int>();
-    //ai
     public Dictionary<BoardPossibleWinScenarios, int> opponentBoard = new Dictionary<BoardPossibleWinScenarios, int>();
     public enum BoardPossibleWinScenarios { firstRow, secondRow, thirdRow, firstColumn, secondColumn, thirdColumn, forwardDiagonal, backDiagonal };
-    /// <summary>
-    /// Used to map strings to int to convert the board from a data structure of Strings to int and otherwise
-    /// </summary>
-    private Dictionary<string, int> boardStringIntegerMapper = new Dictionary<string, int>
-        {
-            { "[0,0]", 0 }, { "[0,1]", 1 }, { "[0,2]", 2 },
-            { "[1,0]", 3 }, { "[1,1]", 4 }, { "[1,2]", 5 },
-            { "[2,0]", 6 }, { "[2,1]", 7 }, { "[2,2]", 8 },
-        };
+
+    [DllImport("__Internal")]
+    private static extern void PlayerWin();
+
+    [DllImport("__Internal")]
+    private static extern void Tie();
+    
+    [DllImport("__Internal")]
+    private static extern void AIWin();
+
+    private Dictionary<string, int> boardStringIntegerMapper = new Dictionary<string, int> 
+    {
+        { "[0,0]", 0 }, { "[0,1]", 1 }, { "[0,2]", 2 },
+        { "[1,0]", 3 }, { "[1,1]", 4 }, { "[1,2]", 5 },
+        { "[2,0]", 6 }, { "[2,1]", 7 }, { "[2,2]", 8 },
+    };
+
     public Dictionary<int, string> boardIntegerStringMapper = new Dictionary<int, string>
-        {
-            {0, "[0,0]"}, {1, "[0,1]"}, {2,  "[0,2]" },
-            {3, "[1,0]" }, {4, "[1,1]" }, {5, "[1,2]" },
-            {6, "[2,0]" }, {7, "[2,1]" }, {8, "[2,2]" },
-        };
+    {
+        {0, "[0,0]"}, {1, "[0,1]"}, {2,  "[0,2]" },
+        {3, "[1,0]" }, {4, "[1,1]" }, {5, "[1,2]" },
+        {6, "[2,0]" }, {7, "[2,1]" }, {8, "[2,2]" },
+    };
 
     void Awake()
     {
-        InitBoard();
-        InitializePlayersScore();
-        if (Application.loadedLevel.Equals(1))
-        {
-            RollStart();
-        }
+        IniciarTabuleiro();
+        InicializarPlayerScore();
+
+        // if (Application.loadedLevel.Equals(1)) {
+        //     RolarJogadorInicial();
+        // }
     }
 
-    private void InitBoard()
+    private void IniciarTabuleiro()
     {
-        positionArr = GameObject.FindGameObjectsWithTag("Position");
+        casasArray = GameObject.FindGameObjectsWithTag("Casa");
     }
 
-    private void RollStart()
+    private void RolarJogadorInicial()
     {
         IEnumerable<int> playerRange;
-        int rInt;
-        GenerateRandomNumber(out playerRange, out rInt);
+        int randomInt;
+        GenerateRandomNumber(out playerRange, out randomInt);
 
-        if (playerRange.Contains(rInt))
+        if (playerRange.Contains(randomInt))
         {
             Debug.Log("player");
         }
@@ -65,15 +68,15 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private static void GenerateRandomNumber(out IEnumerable<int> playerRange, out int rInt)
+    private static void GenerateRandomNumber(out IEnumerable<int> playerRange, out int randomInt)
     {
         playerRange = Enumerable.Range(0, 50);
         IEnumerable<int> aiRange = Enumerable.Range(51, 49);
         System.Random r = new System.Random();
-        rInt = r.Next(0, 100);
+        randomInt = r.Next(0, 100);
     }
 
-    public void InitializePlayersScore()
+    public void InicializarPlayerScore()
     {
         int score = 0;
         foreach (BoardPossibleWinScenarios boardPossibleWinScenario in Enum.GetValues(typeof(BoardPossibleWinScenarios)))
@@ -83,16 +86,16 @@ public class GameController : MonoBehaviour
         }
     }
 
-    //TODO: finish, remember to check for tie as well !
-    public void IsGameOver()
+    public void CheckFimDeJogo()
     {
-        bool isGameOver = false;
+        bool CheckFimDeJogo = false;
         foreach (KeyValuePair<BoardPossibleWinScenarios, int> boardPosition in playerBoard)
         {
             if (playerBoard[boardPosition.Key].Equals(3))
             {
                 Debug.Log("player win");
-                isGameOver = true;
+                // PlayerWin();
+                CheckFimDeJogo = true;
             }
         }
         foreach (KeyValuePair<BoardPossibleWinScenarios, int> boardPosition in opponentBoard)
@@ -100,45 +103,50 @@ public class GameController : MonoBehaviour
             if (opponentBoard[boardPosition.Key].Equals(3))
             {
                 Debug.Log("opponent win");
-                isGameOver = true;
+                // AIWin();
+                CheckFimDeJogo = true;
             }
         }
         int isTie = 0;
-        foreach (GameObject o in positionArr)
+        foreach (GameObject o in casasArray)
         {
             Position parentPosition = o.GetComponent<Position>();
             isTie = parentPosition.isClicked ? isTie + 1 : isTie;
         }
         if (isTie == 9)
         {
-            Debug.Log("tie");
-            isGameOver = true;
+            Debug.Log("tie"); 
+            // Tie();
+            CheckFimDeJogo = true;
 
         }
-        if (isGameOver)
+        if (CheckFimDeJogo)
         {
-            RestartGame();
+            // Invoke("ReiniciarJogo", 5.0f);
+            Debug.Log("FIM DE JOGO");
         }
     }
 
-    public void RestartGame()
+    public void ReiniciarJogo()
     {
         Debug.Log("restarting game");
         playersChoice = "";
+
         //reset wins
         foreach (BoardPossibleWinScenarios boardPossibleWinScenario in Enum.GetValues(typeof(BoardPossibleWinScenarios)))
         {
             playerBoard[boardPossibleWinScenario] = 0;
             opponentBoard[boardPossibleWinScenario] = 0;
         }
-        //reset gamobjects
-        for (int i = 0; i < this.positionArr.Length; i++)
+
+        //reset gameobjects
+        for (int i = 0; i < this.casasArray.Length; i++)
         {
-            positionArr[i].GetComponent<Position>().isClicked = false;
-            for (int j = 0; j < this.positionArr[i].transform.childCount; j++)
+            casasArray[i].GetComponent<Position>().isClicked = false;
+            for (int j = 0; j < this.casasArray[i].transform.childCount; j++)
             {
-                GameObject xOrCircle = this.positionArr[i].transform.GetChild(j).gameObject;
-                xOrCircle.GetComponent<ColorControl>().SetColor(xOrCircle.GetComponent<ColorControl>().AlphaColor);
+                GameObject xOrCircle = this.casasArray[i].transform.GetChild(j).gameObject;
+                xOrCircle.GetComponent<ColorControl>().SetCor(xOrCircle.GetComponent<ColorControl>().AlphaColor);
             }
         }
     }
@@ -192,19 +200,15 @@ public class GameController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Plays the AI turn
-    /// </summary>
     public int PlayAiTurn(GameObject gameObject)
     {
         int aiPlayChoice = GameController.playersChoice.Equals("X") ? -1 : 1;
-        minimaxAlgo.aiPick = aiPlayChoice;
+        minimaxAlgoritmo.aiEscolha = aiPlayChoice;
 
-        EndTurnPosition bestPositionToEndTurn = minimaxAlgo.GetBestPosition(aiPlayChoice, ConvertBoardToInt(gameObject), 0);
+        EndTurnPosition bestPositionToEndTurn = minimaxAlgoritmo.GetMelhorPosicao(aiPlayChoice, ConverterBoardParaInt(gameObject), 0);
         int newBestPositionToPick = bestPositionToEndTurn.position;
 
-        //hide ai ui choices from player
-        foreach (GameObject boardPositions in this.positionArr)
+        foreach (GameObject boardPositions in this.casasArray)
         {
             foreach (KeyValuePair<string, int> integerStringMapperEntry in boardStringIntegerMapper)
             {
@@ -226,14 +230,12 @@ public class GameController : MonoBehaviour
         return newBestPositionToPick;
     }
 
-    /// <summary>
-    /// Converts the board from strings of [x,y] to integers for the minimax algo
-    /// </summary>
-    private int[] ConvertBoardToInt(GameObject gameObject)
+    private int[] ConverterBoardParaInt(GameObject gameObject)
     {
         int[] boardAsIntegers = new int[9];
         Color32 invisibleColor = gameObject.GetComponent<ColorControl>().InvisibleColor;
-        foreach (GameObject position in this.positionArr)
+
+        foreach (GameObject position in this.casasArray)
         {
             foreach (KeyValuePair<string, int> integerStringMapperEntry in boardStringIntegerMapper)
             {
@@ -245,7 +247,7 @@ public class GameController : MonoBehaviour
                     }
                     else
                     {
-                        if (!position.transform.GetChild(0).GetComponent<ColorControl>().GetColor().Equals(invisibleColor) && position.transform.GetChild(0).gameObject.name == "X")
+                        if (!position.transform.GetChild(0).GetComponent<ColorControl>().GetCor().Equals(invisibleColor) && position.transform.GetChild(0).gameObject.name == "X")
                         {
                             boardAsIntegers[integerStringMapperEntry.Value] = 1;
 
