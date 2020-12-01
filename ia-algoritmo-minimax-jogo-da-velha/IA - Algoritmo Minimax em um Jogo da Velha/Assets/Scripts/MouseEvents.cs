@@ -44,9 +44,10 @@ public class MouseEvents : MonoBehaviour
                     renderPositionClicked(gameObject);
                     gameController.IncrementPositionScore(parent.name, gameController.playerBoard);
                 }
-                // int aiPosition = gameController.PlayAiTurn(gameObject);
-                // gameController.IncrementPositionScore(gameController.boardIntegerStringMapper[aiPosition], gameController.opponentBoard);
-                gameController.CheckFimDeJogo();
+                if(!gameController.CheckFimDeJogo()) {
+                    int aiPosition = gameController.PlayAiTurn(gameObject);
+                    gameController.IncrementPositionScore(gameController.boardIntegerStringMapper[aiPosition], gameController.opponentBoard);
+                } 
             }
         }
     }

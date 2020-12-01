@@ -86,27 +86,10 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void CheckFimDeJogo()
+    public bool CheckFimDeJogo()
     {
         bool CheckFimDeJogo = false;
-        foreach (KeyValuePair<BoardPossibleWinScenarios, int> boardPosition in playerBoard)
-        {
-            if (playerBoard[boardPosition.Key].Equals(3))
-            {
-                Debug.Log("player win");
-                // PlayerWin();
-                CheckFimDeJogo = true;
-            }
-        }
-        foreach (KeyValuePair<BoardPossibleWinScenarios, int> boardPosition in opponentBoard)
-        {
-            if (opponentBoard[boardPosition.Key].Equals(3))
-            {
-                Debug.Log("opponent win");
-                // AIWin();
-                CheckFimDeJogo = true;
-            }
-        }
+
         int isTie = 0;
         foreach (GameObject o in casasArray)
         {
@@ -116,15 +99,52 @@ public class GameController : MonoBehaviour
         if (isTie == 9)
         {
             Debug.Log("tie"); 
-            // Tie();
+            Tie();
             CheckFimDeJogo = true;
 
         }
         if (CheckFimDeJogo)
         {
-            // Invoke("ReiniciarJogo", 5.0f);
+            Invoke("ReiniciarJogo", 2.0f);
             Debug.Log("FIM DE JOGO");
+            return true;
         }
+
+        foreach (KeyValuePair<BoardPossibleWinScenarios, int> boardPosition in playerBoard)
+        {
+            if (playerBoard[boardPosition.Key].Equals(3))
+            {
+                Debug.Log("player win");
+                PlayerWin();
+                CheckFimDeJogo = true;
+            }
+        }
+
+        if (CheckFimDeJogo)
+        {
+            Invoke("ReiniciarJogo", 2.0f);
+            Debug.Log("FIM DE JOGO");
+            return true;
+        }
+
+        foreach (KeyValuePair<BoardPossibleWinScenarios, int> boardPosition in opponentBoard)
+        {
+            if (opponentBoard[boardPosition.Key].Equals(3))
+            {
+                Debug.Log("opponent win");
+                AIWin();
+                CheckFimDeJogo = true;
+            }
+        }
+        
+        if (CheckFimDeJogo)
+        {
+            Invoke("ReiniciarJogo", 2.0f);
+            Debug.Log("FIM DE JOGO");
+            return true;
+        }
+        else
+            return false;
     }
 
     public void ReiniciarJogo()
