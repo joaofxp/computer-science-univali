@@ -37,16 +37,24 @@
 
 					<hr>
 
+
 					<h5 class="mb-1">Informe as conexões</h5>
 					<small>Vértices são iniciados em 1. Campos em branco são ignorados.</small>
-
 					<div class="mt-3" id="inputListaDeConexoes">
 						<div class="input-conexao">
-							<input type="text" placeholder="Origem">
-							<input type="text" placeholder="Destino">
+							<input type="text" placeholder="Origem" value="1">
+							<input type="text" placeholder="Destino" value="2">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="b">
+							<input type="text" placeholder="Destino" value="c">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
 						</div>
 					</div>
+
 					<br>
+
 					<div class="text-center">
 						<button class="btn btn-secondary" type="button" onclick="adicionarConexao()">+</button>
 					</div>
@@ -61,7 +69,7 @@
 
 	<main>
 		<div class="container">
-			<header class="d-flex justify-content-center py-3">
+			<header class="d-flex justify-content-center py-1">
 				<ul class="nav nav-pills">
 					<li class="nav-item">
 						<a class="nav-link">
@@ -91,8 +99,9 @@
 						<h3>Grafo Desenhado</h3>
 						<p id="inputGrafoDesenhado"></p>
 					</div>
+					<!-- Buscar No Grafo -->
 					<div class="col-3">
-						<h4>Buscar no grafo</h4>
+						<h5>Buscar no grafo</h5>
 
 						<div class="form-floating">
 							<select class="form-select" id="inputTipoBusca">
@@ -102,7 +111,7 @@
 							<label for="inputTipoBusca">Algoritmo de busca</label>
 						</div>
 
-						<small>Origem e Destino são opcionais para realizar a busca</small>
+						<small>Origem e Destino são opcionais</small>
 
 						<div class="mt-3 input-conexao">
 							<input type="text" placeholder="Origem" id="inputBuscarGrafoOrigem" value="1">
@@ -115,8 +124,8 @@
 							Buscar
 						</button>
 						<br>
-						<hr>
-						<h5>Caminho percorrido</h5>
+						<br>
+						<h6>Caminho percorrido:</h6>
 						<p id="inputCaminhoPercorrido"></p>
 
 						<button type="button" class="btn btn-secondary" onclick="converterCaminhoParaLetra()">
@@ -124,13 +133,27 @@
 						</button>
 
 						<p class="my-3" id="inputCaminhoPercorridoLetra"></p>
+						<hr>
+
+						<h5>Verificar conectividade</h5>
+
+						<button type="button" class="btn btn-secondary" onclick="verificarConectividade()">
+							Verificar
+						</button>
+
+						<br>
+						<br>
+
+						<h6>Resultado:</h6>
+
+						<p id="inputResultado"></p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</main>
 
-	<script src="./js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+	<script src="./js/bootstrap.bundle.min.js"></script>
 	<script type="text/javascript" src="./js/raphael-min.js"></script>
 	<script src="./js/dracula_graffle.js"></script>
 	<script src="./js/dracula_graph.js"></script>

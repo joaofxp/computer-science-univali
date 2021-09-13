@@ -23,3 +23,9 @@
     text-align: center;
     margin-right: 10px;
 }
+
+button.remover {
+    height: 25px;
+    line-height: 1;
+    padding: 5px;
+}
