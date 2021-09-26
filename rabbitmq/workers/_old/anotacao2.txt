@@ -1,0 +1,7 @@
+Combinar um modelo cliente servidor 
+	com algum modelo orientado a mensagem (publish/subscribe)
+	e fila de mensagem
+
+
+Clientes (browser)
+usar serviço web (rest)

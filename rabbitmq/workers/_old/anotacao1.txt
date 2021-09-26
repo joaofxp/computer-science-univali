@@ -1,0 +1,11 @@
+- ver se o cliente consegue fazer o subscribe
+- Fazer um subscribe de um cliente pelo browser para receber mensagens
+	- cliente solicita pro service para fazer um subscribe
+	- service faz o subscribe do cliente no rabbitmq
+
+Service/Rest:
+	- receber pedido de subscribe do cliente
+	- receber mensagem de um cliente, enviar para o rabbitmq
+	- rabbitmq enviar a mensagem de um cliente para outro
+	- RabbitMq Recebe a mensagem 
+		devolve para o rest/service falando qual cliente vai receber?

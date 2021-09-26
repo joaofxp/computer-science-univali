@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cliente</title>
+</head>
+
+<body>
+	<h1>Sistema de logs</h1>
+	<h3>Enviar um log</h3>
+	<div>
+		<span>Mensagem do log</span>
+		<input type="text" name="mensagemEnviar" id="mensagemEnviar" value="xxx">
+	</div>
+	<br>
+	<div>
+		<span>Tipo do log</span>
+		<select name="logTipo" id="logTipo">
+			<option value="info">Informação</option>
+			<option value="warning">Aviso</option>
+			<option value="error">Erro</option>
+		</select>
+	</div>
+	<br>
+	<button onclick="enviarMensagem()">Enviar mensagem</button>
+
+	<h3>Área de mensagens</h3>
+	<textarea name="areaDeMensagens" id="areaDeMensagens" cols="30" rows="10"></textarea>
+
+	<script src="./app.js"></script>
+</body>
+
+</html>
