@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="compilador.programa.ControllerTabelaInstrucoes">
+   <children>
+      <VBox VBox.vgrow="ALWAYS">
+         <children>
+            <VBox VBox.vgrow="ALWAYS">
+               <HBox VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tabelaInstrucoes" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </HBox.margin></TableView>
+               </HBox>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets left="15.0" right="15.0" />
+   </padding>
+</VBox>

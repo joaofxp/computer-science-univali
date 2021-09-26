@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="700" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="compilador.programa.Controller">
+   <children>
+      <MenuBar>
+         <menus>
+            <Menu mnemonicParsing="false" text="Arquivo">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#novoArquivo" text="Novo Arquivo" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#abrirArquivo" text="Abrir Arquivo..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#salvar" text="Salvar" />
+                  <MenuItem mnemonicParsing="false" onAction="#salvarComoReabrindo" text="Salvar Como..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#fecharPrograma" text="Sair" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edição">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#copiar" text="Copiar" />
+                  <MenuItem mnemonicParsing="false" onAction="#colar" text="Colar" />
+                  <MenuItem mnemonicParsing="false" onAction="#recortar" text="Recortar" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Compilação">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#compilar" text="Compilar" />
+                  <MenuItem mnemonicParsing="false" onAction="#executar" text="Executar" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false">
+               <graphic>
+                  <Label onMouseClicked="#equipe" text="Equipe" />
+               </graphic>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <VBox VBox.vgrow="ALWAYS">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ToolBar>
+                     <items>
+                        <Button mnemonicParsing="false" onAction="#novoArquivo">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/adicionar-arquivo.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#abrirArquivo">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/abrir-arquivo.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#salvar">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/salvar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" />
+                        <Button mnemonicParsing="false" onAction="#recortar">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/cortar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#copiar">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/copiar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#colar">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/colar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" />
+                        <Button mnemonicParsing="false" onAction="#compilar">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/compilar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#executar">
+                           <graphic>
+                              <ImageView disable="true" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/executar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" />
+                        <Button mnemonicParsing="false" onAction="#equipe">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@programa/icones/ajuda.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </items>
+                  </ToolBar>
+               </children>
+            </HBox>
+            <VBox VBox.vgrow="ALWAYS">
+               <Label>Edição</Label>
+               <HBox VBox.vgrow="ALWAYS">
+                  <TextArea fx:id="textColunaEsquerda" editable="false" disable="true" prefWidth="30.0"></TextArea>
+                  <TextArea fx:id="textAreaEditar" onKeyReleased="#marcarFlagConteudoAlterou" onMouseClicked="#atualizaPosicaoCursor" HBox.hgrow="ALWAYS" />
+               </HBox>
+            </VBox>
+
+            <Label>Mensagens</Label>
+
+            <HBox prefHeight="200.0">
+               <TextArea fx:id="textAreaMensagens" editable="false" prefHeight="154.0" prefWidth="3000.0" />
+            </HBox>
+
+            <HBox id="HBox" alignment="CENTER_LEFT" minHeight="22.0" prefHeight="22.0" prefWidth="1080.0" spacing="5.0" VBox.vgrow="NEVER">
+               <children>
+                  <Label fx:id="posicaoLinha" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Linha: 1," HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="posicaoColuna" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Coluna: 0" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets left="15.0" right="15.0" />
+   </padding>
+   <stylesheets>
+      <URL value="@style.css" />
+   </stylesheets>
+</VBox>

@@ -1,0 +1,1093 @@
+options {
+	STATIC = false;
+}
+
+PARSER_BEGIN(Analisador)
+package compilador.analisadorsintatico;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.reflect.*;
+import compilador.recovery.*;
+import compilador.semantico.*;
+import compilador.programa.Controller;
+
+public class Analisador {
+	private static StringBuilder resultado = new StringBuilder();
+	private static Boolean houveErro = false;
+	private static Boolean houveErroSintatico = false;
+
+	public StringBuilder syntacticErrors = new StringBuilder();
+	boolean debug_recovery = true;
+	boolean eof;
+	Token lastError = null;
+	public int contParseError = 0;
+
+	public static AnalisadorSemantico semantico = new AnalisadorSemantico();
+
+	public static void main(String args[]) throws ParseException {
+	    Analisador parser = new Analisador(System.in);
+		resultado = new StringBuilder();
+
+		parser.iniciarCompilador(parser, args, "");
+	}
+
+	public Boolean checkCategoriaNome(String categoriaNome) {
+		return categoriaNome.equals("DEFAULT") || categoriaNome.equals("COMENTARIODELINHA") || categoriaNome.equals("COMENTARIODEBLOCO");
+	}
+
+	public String getLexemaCategoriaNome(int categoriaNumero) {
+		String returnValue = "INVALIDO";
+		Field f[] = AnalisadorConstants.class.getDeclaredFields();
+
+		for (int i = 0; i < f.length; i++) {
+			try {
+				if (f[i].get(f[i]).equals(categoriaNumero)) {
+					String categoriaNome = f[i].getName();
+					if (checkCategoriaNome(categoriaNome)) {
+						continue;
+
+					} else {
+						returnValue = f[i].getName();
+					}
+				}
+			} catch (IllegalAccessException e) {}
+		}
+
+		return returnValue;
+	}
+
+	public void PrintLexema(Token t) {
+		String categoriaNome = getLexemaCategoriaNome(t.kind);
+
+		if (categoriaNome.indexOf("PALAVRA_RESERVADA") > -1) {
+			categoriaNome = "PALAVRA_RESERVADA";
+		} else if (categoriaNome.indexOf("SIMBOLO_ESPECIAL") > -1) {
+			categoriaNome = "SIMBOLO_ESPECIAL";
+		}
+
+		switch (categoriaNome) {
+			case "ENTRADA_INVALIDA":
+				printar("ERRO DE LEXEMA: | " + t + " | na linha " + t.beginLine + " e na coluna " +
+					t.beginColumn + ". Entrada invalida, tente novamente.");
+				    setHouveErroLexico();
+				break;
+			case "EOF":
+				printar("Lexema <EOF> indicando o fim do arquivo encontrado na linha " +
+					t.beginLine + " e na coluna " + t.beginColumn);
+				break;
+			default:
+				printar("Lexema: | " + t + " | encontrado na linha " + t.beginLine + " e na coluna " + t.beginColumn + " da categoria " + categoriaNome + " com o numero " + t.kind);
+				break;
+		}
+	}
+
+	public void printar(String mensagem) {
+		resultado.append(mensagem + "\n");
+	}
+
+	public static void printarStatic(String mensagem) {
+		resultado.append(mensagem + "\n");
+	}
+
+	public static void resetHouveErroLexico() {
+        Analisador.houveErro = false;
+    }
+
+	public static void setHouveErroLexico() {
+        Analisador.houveErro = true;
+	}
+
+	public static void setHouveErroSintatico(Boolean valor) {
+	    Analisador.houveErroSintatico = valor;
+	}
+
+	public void analisadorLexico() {
+		try {
+			Token t = null;
+			t = getNextToken();
+
+//			if (t.kind == EOF) {
+//				printar("Insira algum lexema para compilar.");
+//				return;
+//			}
+
+			while (t.kind != EOF) {
+				String nomeToken = tokenImage[t.kind];
+//				PrintLexema(t);
+				t = getNextToken();
+			}
+
+//			PrintLexema(t);
+		} catch (Error e) {
+			System.out.println(e.getMessage());
+			analisadorLexico();
+		}
+	}
+
+    static public String im(int x) {
+        int k;
+        String s;
+        s = tokenImage[x];
+        k = s.lastIndexOf("\"");
+
+        try {
+            s = s.substring(1,k);
+        } catch (StringIndexOutOfBoundsException e)
+            {}
+        return s;
+    }
+
+    public void consumeUntil(RecoverySet g, ParseException e, String errorMsg, String met) throws ParseEOFException, ParseException {
+        Token tok;
+
+//       if (debug_recovery) {
+//           System.out.println("met -> " + met);
+//           System.out.println("Recovery Set: " + g);
+//       }
+
+       if (g == null) throw e;
+
+       tok = getToken(1);
+
+       syntacticErrors.append("\n| ERRO SINTATICO |");
+
+       while (!eof) {
+            if (g.contains(tok.kind)) {
+//                 if ( debug_recovery) {
+//                    System.out.println("Encontrou o token: " + im(tok.kind));
+//                 }
+                 break;
+            }
+
+//            if (debug_recovery) {
+//                System.out.println("Ignorando token: " + im(tok.kind));
+
+//                syntacticErrors.append("\n| Causado pelo lexema: [\"" + tok + "\"] |");
+//            }
+
+            getNextToken();
+            tok = getToken(1);
+
+            if (tok.kind == EOF && ! g.contains(EOF) ) {
+                eof = true;
+            }
+       }
+
+        syntacticErrors.append(
+            "\n| Mensagem de erro: " + errorMsg + " |" +
+            "\n| na linha: " + tok.beginLine + " e na coluna: " + tok.beginColumn + " |" +
+            "\n| Esperava: " + expectedTokens(e) + " | "+
+            "\n| Mas encontrou: [\"" + e.currentToken.next + "\"] | \n"
+        );
+
+        contParseError++;
+
+        if ( eof ) throw new ParseEOFException("EOF encontrado de modo prematuro.");
+    }
+
+    public static List<String> expectedTokens(ParseException e) {
+        List<String> output = new ArrayList<String>();
+        for (int[] group : e.expectedTokenSequences) {
+            for (int tokenConst : group) {
+                output.add(AnalisadorConstants.tokenImage[tokenConst]);
+            }
+        }
+        return output;
+    }
+
+	public String iniciarCompilador(Analisador parser, String args[], String inputTexto) throws ParseException {
+		Analisador analisador;
+		Analisador analisadorLexico;
+		Analisador analisadorSemantico;
+
+		resultado = new StringBuilder();
+
+		if (args.length == 0) {
+			InputStream edicaoInputStream = new ByteArrayInputStream(inputTexto.getBytes());
+			analisador = new Analisador(edicaoInputStream);
+			analisadorLexico = new Analisador(edicaoInputStream);
+			analisadorSemantico = new Analisador(edicaoInputStream);
+			parser.semantico.executar = true;
+		} else if (args.length == 1) {
+			try {
+				analisador = new Analisador(new java.io.FileInputStream(args[0]));
+				analisadorLexico = new Analisador(new java.io.FileInputStream(args[0]));
+				analisadorSemantico = new Analisador(new java.io.FileInputStream(args[0]));
+			} catch (java.io.FileNotFoundException e) {
+				System.err.println(args[0] + " was not found.");
+				System.err.println(e);
+				return args[0] + " was not found.";
+			}
+		} else {
+			return "Erro";
+		}
+
+        Analisador.resetHouveErroLexico();
+		analisador.setHouveErroSintatico(false);
+
+        analisadorLexico.analisadorLexico();
+
+        if(!analisadorLexico.houveErro) {
+            printar("Lexico correto");
+
+            try {
+                int analisarSintaxe = parser.analisadorSintatico();
+
+                if(contParseError > 0) {
+                    printar(String.format("Houve %s erros sintaticos: \n %s", contParseError, parser.syntacticErrors));
+                } else {
+
+                    if(analisarSintaxe == 0) {
+                        printar("Sintaxe correta");
+
+                        if(parser.semantico.erros.size() > 0) {
+                            System.out.println("Houve erro semantico");
+                            printar("Semantico incorreto, lista de erros: \n{\n"+this.semantico.getListaDeErrosAsString()+"}");
+                            Controller.listaDeInstrucoes = new ArrayList<Instrucao>();
+                        } else {
+                            Controller.listaDeInstrucoes = this.semantico.getInstrucoes();
+                            printar("Semantico correto");
+//                            printar("Semantico correto, codigo gerado: \n{\n" + this.semantico.toString() + "}");
+                        }
+
+                        this.semantico = new AnalisadorSemantico();
+                    }
+                }
+
+                if(parser.houveErroSintatico) {
+                    printar("ERRO Sintatico!");
+                }
+            }
+            catch (ParseException e) {
+                printar("ERRO Sintatico!");
+                printar(e.getMessage());
+            }
+            catch (ParseEOFException e) {
+                printar("ERRO Sintatico!");
+                printar(e.getMessage());
+            }
+        }
+
+        return resultado.toString();
+	}
+}
+
+PARSER_END(Analisador)
+
+TOKEN [ IGNORE_CASE ]:{
+	<PALAVRA_RESERVADA_PROGRAM : "program">
+	|	<PALAVRA_RESERVADA_DEFINE : "define">
+	|	<PALAVRA_RESERVADA_NOT : "not">
+	|	<PALAVRA_RESERVADA_VARIABLE : "variable">
+	|	<PALAVRA_RESERVADA_IS : "is">
+	|	<PALAVRA_RESERVADA_NATURAL : "natural">
+	|	<PALAVRA_RESERVADA_REAL : "real">
+	|	<PALAVRA_RESERVADA_CHAR : "char">
+	|	<PALAVRA_RESERVADA_BOOLEAN : "boolean">
+	|	<PALAVRA_RESERVADA_EXECUTE : "execute">
+	|	<PALAVRA_RESERVADA_SET : "set">
+	|	<PALAVRA_RESERVADA_TO : "to">
+	|	<PALAVRA_RESERVADA_GET : "get">
+	|	<PALAVRA_RESERVADA_PUT : "put">
+	|	<PALAVRA_RESERVADA_LOOP : "loop">
+	|	<PALAVRA_RESERVADA_WHILE : "while">
+	|	<PALAVRA_RESERVADA_DO : "do">
+	|	<PALAVRA_RESERVADA_TRUE : "true">
+	|	<PALAVRA_RESERVADA_FALSE : "false">
+	|	<PALAVRA_RESERVADA_VERIFY : "verify">
+}
+
+TOKEN: {
+	<#LETRAS : ["a"-"z","A"-"Z"]>
+	|   <#DIGITOS : ["0"-"9"]>
+	|	<#UNDERLINE : "_">
+
+	|     <IDENTIFICADORES:
+			(
+				(
+					(
+                    	(
+                        	<LETRAS>
+                        	(<UNDERLINE>)?
+                    	)
+                    	|
+                    	(
+                        	<UNDERLINE>
+                        	(<LETRAS>)?
+                    	)
+					)
+					(<DIGITOS>)
+				)
+				| ( <UNDERLINE> <LETRAS> )
+				| ( <LETRAS> )
+			)*
+        	(
+				(<UNDERLINE>)
+				| (<LETRAS>)
+				| (<LETRAS> <UNDERLINE>)
+				| (<UNDERLINE> <LETRAS>)
+			)
+		>
+
+	|	<CONSTANTE_NUMERICA_INTEIRA:
+        	<DIGITOS> (<DIGITOS>)? (<DIGITOS>)?
+    	>
+
+	|	<CONSTANTE_NUMERICA_REAL:
+        	<DIGITOS> (<DIGITOS>)? (<DIGITOS>)? (<DIGITOS>)? (<DIGITOS>)? "." <DIGITOS> (<DIGITOS>)?
+    	>
+
+	|	<CONSTANTE_LITERAL:
+        	(
+            	"'"
+            	(~["'","\n","\r"])*
+            	"'"
+			)
+			|
+        	(
+            	"\""
+            	(~["\"","\n","\r"])*
+            	"\""
+			)
+		>
+
+	|   <SIMBOLO_ESPECIAL_PONTO: ".">
+	|	<SIMBOLO_ESPECIAL_VIRGULA: ",">
+	|	<SIMBOLO_ESPECIAL_ABRECHAVES: "{">
+	|	<SIMBOLO_ESPECIAL_FECHACHAVES: "}">
+	|	<SIMBOLO_ESPECIAL_ABRECOLCHETE: "[">
+	|	<SIMBOLO_ESPECIAL_FECHACOLCHETE: "]">
+    |	<SIMBOLO_ESPECIAL_ABREPARENTESES: "(">
+    |	<SIMBOLO_ESPECIAL_FECHAPARENTESES: ")">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MAIS : "+">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MENOS : "-">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_DIVISAO : "/">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MULTIPLICACAO : "*">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_POTENTIACAO : "**">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_DIVISAO_INTEIRA : "%">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_DIVISAO_INTEIRA_RESTO : "%%">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_IGUALIGUAL : "==">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_DIFERENTE : "!=">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MENOR : "<">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MAIOR : ">">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MENORIGUAL : "<=">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_MAIORIGUAL : ">=">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_E : "&">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_OU : "|">
+	|	<SIMBOLO_ESPECIAL_OPERADOR_NAO : "!">
+	|   <SIMBOLO_ESPECIAL_COMENTARIO : ":-">
+}
+
+SKIP: {
+    " "
+	|   "\n"
+	|   "\r"
+	|   "\r\n"
+	|   "\f"
+	|   "\t"
+
+	|   "//": COMENTARIODELINHA
+	|   "/*": COMENTARIODEBLOCO
+}
+
+<COMENTARIODELINHA> SKIP: {
+	< ["\n", "\r"]>: DEFAULT
+	| < ~[] >
+}
+
+<COMENTARIODEBLOCO> SKIP: {
+	"*/": DEFAULT
+	| < ~[] >
+}
+
+SPECIAL_TOKEN: {
+    <CABECALHO_INVALIDO :
+        [":"]([" "])* (["-"])+ (~["'","\""," "])*
+        | [":"]
+        | [":"]([" "])* (["-"])+ ([" "])* <IDENTIFICADORES>
+    > {
+        Analisador.printarStatic("ERRO DE LEXEMA. Voce tentou declarar um comentario de cabecalho? \nUse :- constanteLiteral, por exemplo: :- 'meu programa' \n");
+        Analisador.setHouveErroLexico();
+    }
+
+	|    <ATRIBUICAO_INVALIDA : "=" | "==="> {
+	        Analisador.setHouveErroLexico();
+			Analisador.printarStatic("ERRO DE LEXEMA : | " + image + " | na linha " + matchedToken.beginLine + " e na coluna " + matchedToken.beginColumn + " \nVoce tentou fazer uma atribuicao? Use ==\n");
+		}
+
+	|   <CONSTANTE_LITERAL_INVALIDA:
+	    "'"
+	    | "\""
+	    | "'" (~["\"","\n"])* "\""
+	    | "\"" (~["'","\n"])* "'"
+	> {
+        Analisador.setHouveErroLexico();
+        Analisador.printarStatic("ERRO DE LEXEMA ao tentar declarar uma CONSTANTE_LITERAL na linha " + matchedToken.beginLine + " e na coluna " +
+            matchedToken.beginColumn + ". \n Voce tentou declarar uma constante literal? \nLembre de iniciar e finalizar com apostrofos ou aspas na mesma linha e de repetir o mesmo simbolo no inicio e no fim.\n");
+    }
+    |   <IDENTIFICADOR_INVALIDO :
+            (<LETRAS> | <UNDERLINE>)+ <DIGITOS>
+            |
+            (<UNDERLINE>)+ <UNDERLINE>
+        > {
+            Analisador.setHouveErroLexico();
+            Analisador.printarStatic("ERRO DE LEXEMA ao tentar declarar um IDENTIFICADOR na linha " + matchedToken.beginLine + " e na coluna " +
+                        matchedToken.beginColumn + ". \nVoce tentou declarar um identificador? \nLembre de nao repetir dois underlines seguidos, dois numeros seguidos ou finalizar com um numero.\n");
+        }
+}
+
+<*> TOKEN : {
+    <EOF> {
+        if(curLexState == COMENTARIODEBLOCO) {
+            Analisador.printarStatic("ERRO DE LEXEMA. Voce esqueceu de fechar o comentario de bloco? Lembre-se de fechar com */");
+            Analisador.setHouveErroLexico();
+            curLexState = DEFAULT;
+        }
+    }
+	|   <ENTRADA_INVALIDA: ~[]>
+}
+
+
+int analisadorSintatico() throws ParseEOFException : {
+    RecoverySet g = First.analisadorSintatico;
+} {
+    try {
+        comentario(g)
+        <PALAVRA_RESERVADA_PROGRAM>
+        <SIMBOLO_ESPECIAL_ABRECHAVES>
+            declaracaoDeConstantesEVariaveis(g)
+            corpoDoPrograma(g)
+        <SIMBOLO_ESPECIAL_FECHACHAVES>
+        identificadorDoPrograma(g) {semantico.acao1();return 0;}
+        <EOF>
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao iniciar o analisador sintatico", "analisadorSintatico");
+        return 1;
+    }
+}
+
+void comentario(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryComentario = First.comentario.union(g);
+}{
+    try {
+        [<SIMBOLO_ESPECIAL_COMENTARIO> <CONSTANTE_LITERAL>]
+    } catch (ParseException e) {
+        consumeUntil(recoveryComentario, e, "Erro ao declarar comentario de cabecalho", "comentario");
+    }
+}
+
+void identificadorDoPrograma(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryIdentificadorDoPrograma = First.identificadorDoPrograma.union(g);
+}{
+    try {
+        (<IDENTIFICADORES> {semantico.acao2(token.image);})?
+    } catch (ParseException e) {
+        consumeUntil(recoveryIdentificadorDoPrograma, e, "Erro ao declarar identificador do programa", "identificadorDoPrograma");
+    }
+}
+
+void declaracaoDeConstantesEVariaveis(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryDeclaracaoDeConstantesEVariaveis = First.declaracaoDeConstantesEVariaveis.union(g);
+}{
+    try {
+        (<PALAVRA_RESERVADA_DEFINE>
+        <SIMBOLO_ESPECIAL_ABRECHAVES>
+            constantesEVariaveis(recoveryDeclaracaoDeConstantesEVariaveis)
+        <SIMBOLO_ESPECIAL_FECHACHAVES> )?
+    } catch (ParseException e) {
+        consumeUntil(recoveryDeclaracaoDeConstantesEVariaveis, e, "Erro ao iniciar declaracao de constantes e variaveis do programa", "declaracaoDeConstantesEVariaveis");
+    }
+}
+
+void constantesEVariaveis(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryConstantesEVariaveis = First.constantesEVariaveis.union(g);
+}{
+    try {
+        declaracaoDeConstantes(recoveryConstantesEVariaveis) variaveisLinhaLinha(recoveryConstantesEVariaveis)
+        |
+        declaracaoDeVariaveis(recoveryConstantesEVariaveis) constantesLinhaLinha(recoveryConstantesEVariaveis)
+    } catch (ParseException e) {
+        consumeUntil(recoveryConstantesEVariaveis, e, "Erro ao declarar constantes e variaveis", "constantesEVariaveis");
+    }
+}
+
+void declaracaoDeConstantes(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryDeclaracaoDeConstantes = First.declaracaoDeConstantes.union(g);
+}{
+    try {
+        <PALAVRA_RESERVADA_NOT> <PALAVRA_RESERVADA_VARIABLE> {semantico.acao3();} constantes(recoveryDeclaracaoDeConstantes)
+    } catch (ParseException e) {
+        consumeUntil(recoveryDeclaracaoDeConstantes, e, "Erro ao iniciar declaracao de constante", "declaracaoDeConstantes");
+    }
+}
+
+void constantes(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryConstantes = First.constantes.union(g);
+}{
+    try {
+        tipo(recoveryConstantes) <PALAVRA_RESERVADA_IS>
+        listaDeIdentificadoresDeConstantes(recoveryConstantes) {semantico.acao4();}
+        valor(recoveryConstantes) {semantico.acao5(token);}
+        <SIMBOLO_ESPECIAL_PONTO> constantesLinha(recoveryConstantes)
+    } catch (ParseException e) {
+        consumeUntil(recoveryConstantes, e, "Erro ao declarar constante", "constantes");
+    }
+}
+
+void constantesLinha(RecoverySet g) throws ParseEOFException :{
+}{
+    (constantes(g))?
+}
+
+void constantesLinhaLinha(RecoverySet g) throws ParseEOFException :{}{
+    (declaracaoDeConstantes(g))?
+}
+
+void declaracaoDeVariaveis(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryDeclaracaoDeVariaveis = First.corpoDoPrograma.union(g);
+}{
+    try {
+        <PALAVRA_RESERVADA_VARIABLE> {semantico.acao6();}
+        variaveis(recoveryDeclaracaoDeVariaveis)
+    } catch (ParseException e) {
+        consumeUntil(recoveryDeclaracaoDeVariaveis, e, "Erro ao iniciar declaracao de variaveis", "declaracaoDeVariaveis");
+    }
+}
+
+void variaveis(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryVariaveis = First.variaveis.union(g);
+}{
+    try {
+        tipo(recoveryVariaveis) <PALAVRA_RESERVADA_IS>
+        listaDeIdentificadoresDeVariaveis(recoveryVariaveis) {semantico.acao4();}
+        <SIMBOLO_ESPECIAL_PONTO>
+        variaveisLinha(recoveryVariaveis)
+    } catch (ParseException e) {
+        consumeUntil(recoveryVariaveis, e, "Erro ao declarar variavel", "variaveis");
+    }
+}
+
+void variaveisLinha(RecoverySet g) throws ParseEOFException :{}{
+    (variaveis(g))?
+}
+
+void variaveisLinhaLinha(RecoverySet g) throws ParseEOFException :{}{
+    (declaracaoDeVariaveis(g))?
+}
+
+void tipo(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryTipo = First.tipo.union(g);
+}{
+    try {
+        <PALAVRA_RESERVADA_NATURAL> {semantico.acao7();}
+        | <PALAVRA_RESERVADA_REAL> {semantico.acao8();}
+        | <PALAVRA_RESERVADA_CHAR> {semantico.acao9();}
+        | <PALAVRA_RESERVADA_BOOLEAN> {semantico.acao10();}
+    } catch (ParseException e) {
+        consumeUntil(recoveryTipo, e, "Erro ao declarar tipo", "tipo");
+    }
+}
+
+void listaDeIdentificadoresDeConstantes(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryListaDeIdentificadoresDeConstantes = First.listaDeIdentificadoresDeConstantes.union(g);
+}{
+    try {
+        <IDENTIFICADORES> {semantico.acao11(token.image);}
+        listaDeIdentificadoresDeConstantesLinha(recoveryListaDeIdentificadoresDeConstantes)
+    } catch (ParseException e) {
+        consumeUntil(recoveryListaDeIdentificadoresDeConstantes, e, "Erro ao declarar identificador de constante", "listaDeIdentificadoresDeConstantes");
+    }
+}
+
+void listaDeIdentificadoresDeConstantesLinha(RecoverySet g) throws ParseEOFException :{}{
+    (
+        <SIMBOLO_ESPECIAL_VIRGULA>
+        listaDeIdentificadoresDeConstantes(g)
+    )?
+}
+
+void listaDeIdentificadoresDeVariaveis(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryListaDeIdentificadoresDeVariaveis = First.listaDeIdentificadoresDeVariaveis.union(g);
+}{
+    try {
+        <IDENTIFICADORES> {semantico.acao12(token.image);}
+        indice(recoveryListaDeIdentificadoresDeVariaveis) {semantico.acao13();}
+        listaDeIdentificadoresDeVariaveisLinha(recoveryListaDeIdentificadoresDeVariaveis)
+    } catch (ParseException e) {
+        consumeUntil(recoveryListaDeIdentificadoresDeVariaveis, e, "Erro ao declarar identificador de variavel", "listaDeIdentificadoresDeVariaveis");
+    }
+}
+
+void listaDeIdentificadoresDeVariaveisLinha(RecoverySet g) throws ParseEOFException :{}{
+    (
+        <SIMBOLO_ESPECIAL_VIRGULA>
+        listaDeIdentificadoresDeVariaveis(g)
+    )?
+}
+
+void indice(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryIndice = First.indice.union(g);
+}{
+    try {
+        (<SIMBOLO_ESPECIAL_ABRECOLCHETE>
+            <CONSTANTE_NUMERICA_INTEIRA> {semantico.acao14(token.image);}
+        <SIMBOLO_ESPECIAL_FECHACOLCHETE> )?
+    } catch (ParseException e) {
+        consumeUntil(recoveryIndice, e, "Erro ao declarar indice", "indice");
+    }
+}
+
+void valor(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryValor = First.valor.union(g);
+}{
+    try {
+        <CONSTANTE_NUMERICA_INTEIRA> | <CONSTANTE_NUMERICA_REAL>  | <CONSTANTE_LITERAL>
+    } catch (ParseException e) {
+        consumeUntil(recoveryValor, e, "Erro ao declarar valor", "valor");
+    }
+}
+
+void corpoDoPrograma(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryCorpoDoPrograma = First.corpoDoPrograma.union(g);
+}{
+    try {
+        <PALAVRA_RESERVADA_EXECUTE>
+        <SIMBOLO_ESPECIAL_ABRECHAVES>
+            listaDeComandos(recoveryCorpoDoPrograma)
+        <SIMBOLO_ESPECIAL_FECHACHAVES>
+    } catch (ParseException e) {
+        consumeUntil(recoveryCorpoDoPrograma, e, "Erro ao declarar corpo do programa", "corpoDoPrograma");
+    }
+}
+
+void listaDeComandos(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryListaDeComandos = First.listaDeComandos.union(g);
+}{
+    try {
+        comando(recoveryListaDeComandos) <SIMBOLO_ESPECIAL_PONTO> listaDeComandosLinha(recoveryListaDeComandos)
+    } catch (ParseException e) {
+        consumeUntil(recoveryListaDeComandos, e, "Erro ao declarar uma lista de comandos", "listaDeComandos");
+    }
+}
+
+void listaDeComandosLinha(RecoverySet g) throws ParseEOFException :{}{
+    (listaDeComandos(g))?
+}
+
+void comando(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryComando = First.comando.union(g);
+}{
+    try {
+        atribuicao(recoveryComando)
+        | entrada(recoveryComando)
+        | saida(recoveryComando)
+        | selecao(recoveryComando)
+        | repeticao(recoveryComando)
+    } catch (ParseException e) {
+        consumeUntil(recoveryComando, e, "Erro ao declarar comando", "comando");
+    }
+}
+
+void atribuicao(RecoverySet g) throws ParseEOFException :{}{
+    try {
+        <PALAVRA_RESERVADA_SET> {semantico.acao15();}
+        expressao(g)
+        <PALAVRA_RESERVADA_TO>
+        listaDeIdentificadoresDeVariaveis(g) {semantico.acao16();}
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar comando de atribuicao", "atribuicao");
+    }
+}
+
+void entrada(RecoverySet g) throws ParseEOFException :{}{
+    try {
+        <PALAVRA_RESERVADA_GET> {semantico.acao17();}
+        <SIMBOLO_ESPECIAL_ABRECHAVES>
+            listaDeIdentificadoresDeVariaveis(g)
+        <SIMBOLO_ESPECIAL_FECHACHAVES>
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar comando de entrada", "entrada");
+    }
+}
+
+void saida(RecoverySet g) throws ParseEOFException :{}{
+    try {
+        <PALAVRA_RESERVADA_PUT>
+        <SIMBOLO_ESPECIAL_ABRECHAVES>
+            listaDeIdentificadoresEOuConstantes(g)
+        <SIMBOLO_ESPECIAL_FECHACHAVES>
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar comando de saida", "saida");
+    }
+}
+
+void listaDeIdentificadoresEOuConstantes(RecoverySet g) throws ParseEOFException :{}{
+    try {
+        item(g) {semantico.acao18();}
+        listaDeIdentificadoresEOuConstantesLinha(g)
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar comando de saida", "saida");
+    }
+}
+
+void listaDeIdentificadoresEOuConstantesLinha(RecoverySet g) throws ParseEOFException :{}{
+    (
+    <SIMBOLO_ESPECIAL_VIRGULA> listaDeIdentificadoresEOuConstantes(g)
+    )?
+}
+
+void item(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryComando = First.item.union(g);
+}{
+    try{
+        <IDENTIFICADORES> {semantico.acao19(token.image);} indice(g){semantico.acao20();}
+        | <CONSTANTE_NUMERICA_INTEIRA> {semantico.acao21(token.image);}
+        | <CONSTANTE_NUMERICA_REAL> {semantico.acao22(token.image);}
+        | <CONSTANTE_LITERAL> {semantico.acao23(token.image);}
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar item no comando PUT", "item");
+    }
+}
+
+void selecao(RecoverySet g) throws ParseEOFException :{}{
+    try {
+        <PALAVRA_RESERVADA_VERIFY>
+        expressao(g)
+        <PALAVRA_RESERVADA_IS>
+        clausulas(g) {semantico.acao24();}
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar comando de selecao", "selecao");
+    }
+}
+
+void clausulas(RecoverySet g) throws ParseEOFException :{}{
+    <PALAVRA_RESERVADA_TRUE> {semantico.acao25();} <SIMBOLO_ESPECIAL_ABRECHAVES> listaDeComandos(g) <SIMBOLO_ESPECIAL_FECHACHAVES> falsa(g)
+    | <PALAVRA_RESERVADA_FALSE> {semantico.acao26();} <SIMBOLO_ESPECIAL_ABRECHAVES> listaDeComandos(g) <SIMBOLO_ESPECIAL_FECHACHAVES> verdadeira(g)
+}
+
+void verdadeira(RecoverySet g) throws ParseEOFException :{}{
+    (
+    <PALAVRA_RESERVADA_IS>
+    <PALAVRA_RESERVADA_TRUE> {semantico.acao27();}
+    <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaDeComandos(g)
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+    )?
+}
+
+void falsa(RecoverySet g) throws ParseEOFException :{}{
+    (
+    <PALAVRA_RESERVADA_IS>
+    <PALAVRA_RESERVADA_FALSE> {semantico.acao27();}
+    <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaDeComandos(g)
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+    )?
+}
+
+void repeticao(RecoverySet g) throws ParseEOFException :{}{
+    try {
+        <PALAVRA_RESERVADA_LOOP> {semantico.acao28();} <SIMBOLO_ESPECIAL_ABRECHAVES> listaDeComandos(g) <SIMBOLO_ESPECIAL_FECHACHAVES> <PALAVRA_RESERVADA_WHILE> expressao(g) {semantico.acao29();} <PALAVRA_RESERVADA_IS> <PALAVRA_RESERVADA_TRUE>
+        | <PALAVRA_RESERVADA_WHILE> {semantico.acao30();} expressao(g) {semantico.acao31();} <PALAVRA_RESERVADA_IS> <PALAVRA_RESERVADA_TRUE> <PALAVRA_RESERVADA_DO> <SIMBOLO_ESPECIAL_ABRECHAVES> listaDeComandos(g) <SIMBOLO_ESPECIAL_FECHACHAVES> {semantico.acao32();}
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao declarar comando de repeticao.", "repeticao");
+    }
+}
+
+void expressao(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryExpressaoLinha = First.expressao.union(g);
+}{
+    try {
+        expressaoAritmeticaOuLogica(g) expressaoLinha(g)
+    } catch (ParseException e) {
+        consumeUntil(recoveryExpressaoLinha, e, "Erro ao declarar expressao.", "expressaoLinha");
+    }
+}
+
+void expressaoLinha(RecoverySet g) throws ParseEOFException :{
+    RecoverySet recoveryExpressaoLinha = First.expressao.union(g);
+}{
+    (
+    <SIMBOLO_ESPECIAL_OPERADOR_IGUALIGUAL> expressaoAritmeticaOuLogica(recoveryExpressaoLinha) {semantico.acao33();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_DIFERENTE> expressaoAritmeticaOuLogica(recoveryExpressaoLinha) {semantico.acao34();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_MENOR> expressaoAritmeticaOuLogica(recoveryExpressaoLinha) {semantico.acao35();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_MAIOR> expressaoAritmeticaOuLogica(recoveryExpressaoLinha) {semantico.acao36();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_MENORIGUAL> expressaoAritmeticaOuLogica(recoveryExpressaoLinha) {semantico.acao37();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_MAIORIGUAL> expressaoAritmeticaOuLogica(recoveryExpressaoLinha) {semantico.acao38();}
+    )?
+}
+
+void expressaoAritmeticaOuLogica(RecoverySet g) throws ParseEOFException :{}{
+    termo2(g) menorPrioridade(g)
+}
+
+void menorPrioridade(RecoverySet g) throws ParseEOFException :{}{
+    (
+    <SIMBOLO_ESPECIAL_OPERADOR_MAIS> termo2(g) menorPrioridade(g) {semantico.acao39();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_MENOS> termo2(g) menorPrioridade(g) {semantico.acao40();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_OU> termo2(g) menorPrioridade(g) {semantico.acao41();}
+    )?
+}
+
+void termo2(RecoverySet g) throws ParseEOFException :{}{
+    termo1(g) mediaPrioridade(g)
+}
+
+void mediaPrioridade(RecoverySet g) throws ParseEOFException :{}{
+    (
+    <SIMBOLO_ESPECIAL_OPERADOR_MULTIPLICACAO> termo1(g) mediaPrioridade(g) {semantico.acao42();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_DIVISAO> termo1(g) mediaPrioridade(g) {semantico.acao43();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_DIVISAO_INTEIRA_RESTO> termo1(g) mediaPrioridade(g) {semantico.acao44();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_DIVISAO_INTEIRA> termo1(g) mediaPrioridade(g) {semantico.acao45();}
+    | <SIMBOLO_ESPECIAL_OPERADOR_E> termo1(g) mediaPrioridade(g) {semantico.acao46();}
+    )?
+}
+
+void termo1(RecoverySet g) throws ParseEOFException :{}{
+    elemento(g) maiorPrioridade(g)
+}
+
+void maiorPrioridade(RecoverySet g) throws ParseEOFException :{}{
+    (
+    <SIMBOLO_ESPECIAL_OPERADOR_POTENTIACAO> elemento(g) maiorPrioridade(g) {semantico.acao47();}
+    )?
+}
+
+void elemento(RecoverySet g) throws ParseEOFException :{}{
+    <IDENTIFICADORES> {semantico.acao19(token.image);} indice(g) {semantico.acao20();}
+    | <CONSTANTE_NUMERICA_INTEIRA> {semantico.acao21(token.image);}
+    | <CONSTANTE_NUMERICA_REAL> {semantico.acao22(token.image);}
+    | <CONSTANTE_LITERAL> {semantico.acao23(token.image);}
+    | <PALAVRA_RESERVADA_TRUE> {semantico.acao48();}
+    | <PALAVRA_RESERVADA_FALSE> {semantico.acao49();}
+    | <SIMBOLO_ESPECIAL_ABREPARENTESES> expressao(g) <SIMBOLO_ESPECIAL_FECHAPARENTESES>
+    | <SIMBOLO_ESPECIAL_OPERADOR_NAO> <SIMBOLO_ESPECIAL_ABREPARENTESES> expressao(g) <SIMBOLO_ESPECIAL_FECHAPARENTESES> {semantico.acao50();}
+}
+
+
+//OLD SINTATICO
+/*
+int analisadorSintatico() throws ParseEOFException : {
+     RecoverySet g = First.analisadorSintatico;
+} {
+    try {
+        iniciarPrograma(g) <EOF> { return 0; }
+    } catch (ParseException e) {
+        consumeUntil(g, e, "Erro ao iniciar programa", "analisadorSintatico");
+        return 1;
+    }
+}
+
+void iniciarPrograma(RecoverySet g) throws ParseEOFException: {} {
+    <PALAVRA_RESERVADA_PROGRAM> <SIMBOLO_ESPECIAL_ABRECHAVES>
+        declaracaoDeConstantesEVariaveis(g)
+        corpoDoPrograma(g)
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+    [ <IDENTIFICADORES> ]
+}
+
+void declaracaoDeConstantesEVariaveis(RecoverySet g) throws ParseEOFException: {
+    RecoverySet recoveryDeclaracaoDeConstantesEVariaveis = First.declaracaoDeConstantesEVariaveis.union(g);
+ } {
+    try{
+        [
+            <PALAVRA_RESERVADA_DEFINE> <SIMBOLO_ESPECIAL_ABRECHAVES>
+                iniciarDeclaracoes()
+            <SIMBOLO_ESPECIAL_FECHACHAVES>
+        ]
+    } catch (ParseException e) {
+        consumeUntil(recoveryDeclaracaoDeConstantesEVariaveis, e, "Erro ao declarar constantes e variaveis", "declaracaoDeConstantesEVariaveis");
+    }
+}
+
+void iniciarDeclaracoes(): {} {
+    iniciarDeclaracaoConstante() [ iniciarDeclaracaoVariavel() ]
+    | iniciarDeclaracaoVariavel() [ iniciarDeclaracaoConstante() ]
+}
+
+void iniciarDeclaracaoConstante(): {} {
+    <PALAVRA_RESERVADA_NOT> <PALAVRA_RESERVADA_VARIABLE>
+        declaraConstante()
+}
+
+void iniciarDeclaracaoVariavel(): {} {
+    <PALAVRA_RESERVADA_VARIABLE>
+        declaraVariavel()
+}
+
+void declaraConstante(): {} {
+    tipoVariavel() <PALAVRA_RESERVADA_IS> listaIdentificadores() valor() <SIMBOLO_ESPECIAL_PONTO> [ declaraConstante() ]
+}
+
+void declaraVariavel(): {} {
+    tipoVariavel() <PALAVRA_RESERVADA_IS> listaIdentificadores() <SIMBOLO_ESPECIAL_PONTO> [ declaraVariavel() ]
+}
+
+void tipoVariavel() : {} {
+    <PALAVRA_RESERVADA_NATURAL>
+    | <PALAVRA_RESERVADA_REAL>
+    | <PALAVRA_RESERVADA_CHAR>
+    | <PALAVRA_RESERVADA_BOOLEAN>
+}
+
+void listaIdentificadores() : {}
+{
+    <IDENTIFICADORES> [ <SIMBOLO_ESPECIAL_VIRGULA> listaIdentificadores() ]
+}
+
+void listaDeIdentificadoresEOuConstantes() : {} {
+    <IDENTIFICADORES> [ <SIMBOLO_ESPECIAL_VIRGULA> listaDeIdentificadoresEOuConstantes() ]
+    | constantes() [ <SIMBOLO_ESPECIAL_VIRGULA> listaDeIdentificadoresEOuConstantes() ]
+}
+
+void valor() : {} {
+    constantes() | <PALAVRA_RESERVADA_TRUE> | <PALAVRA_RESERVADA_FALSE>
+}
+
+void constantes() : {} {
+    <CONSTANTE_NUMERICA_INTEIRA> | <CONSTANTE_NUMERICA_REAL> | <CONSTANTE_LITERAL>
+}
+
+void corpoDoPrograma(RecoverySet g) throws ParseEOFException: {
+ RecoverySet recoveryCorpoDoPrograma = First.corpoDoPrograma.union(g);
+} {
+    try {
+        <PALAVRA_RESERVADA_EXECUTE> <SIMBOLO_ESPECIAL_ABRECHAVES>
+            listaDeComandos()
+        <SIMBOLO_ESPECIAL_FECHACHAVES>
+    } catch (ParseException e) {
+        consumeUntil(recoveryCorpoDoPrograma, e, "Erro ao declarar corpo do programa", "corpoDoPrograma");
+    }
+}
+
+void listaDeComandos(): {} {
+    comandos() <SIMBOLO_ESPECIAL_PONTO> [ listaDeComandos() ]
+}
+
+void comandos(): {} {
+    comandoAtribuicaoSet()
+    | comandoEntradaDeDadosGet()
+    | comandoSaidaDeDadosPut()
+    | comandoSelecaoVerify()
+    | comandoRepeticaoLoop()
+}
+
+void comandoAtribuicaoSet(): {} {
+    <PALAVRA_RESERVADA_SET> expressao() <PALAVRA_RESERVADA_TO> listaIdentificadores()
+}
+
+void comandoEntradaDeDadosGet(): {} {
+    <PALAVRA_RESERVADA_GET> <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaIdentificadores()
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+}
+
+void comandoSaidaDeDadosPut(): {} {
+    <PALAVRA_RESERVADA_PUT> <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaDeIdentificadoresEOuConstantes()
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+}
+
+void comandoSelecaoVerify(): {} {
+    <PALAVRA_RESERVADA_VERIFY> expressao()
+        iniciarVerify()
+}
+
+void iniciarVerify(): {} {
+   LOOKAHEAD(2) verifyTrue() [ verifyFalse() ]
+    | verifyFalse() [ verifyTrue() ]
+}
+
+void verifyTrue():{} {
+    <PALAVRA_RESERVADA_IS> <PALAVRA_RESERVADA_TRUE> <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaDeComandos()
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+}
+
+void verifyFalse():{} {
+    <PALAVRA_RESERVADA_IS> <PALAVRA_RESERVADA_FALSE> <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaDeComandos()
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+}
+
+void comandoRepeticaoLoop(): {} {
+    whileLoop() | loopDoWhile()
+}
+
+void loopDoWhile():{}{
+    <PALAVRA_RESERVADA_LOOP> <SIMBOLO_ESPECIAL_ABRECHAVES>
+        listaDeComandos()
+    <SIMBOLO_ESPECIAL_FECHACHAVES>
+    <PALAVRA_RESERVADA_WHILE> expressao() <PALAVRA_RESERVADA_IS> <PALAVRA_RESERVADA_TRUE>
+}
+
+void whileLoop():{}{
+    <PALAVRA_RESERVADA_WHILE> expressao() <PALAVRA_RESERVADA_IS> <PALAVRA_RESERVADA_TRUE> <PALAVRA_RESERVADA_DO>
+    <SIMBOLO_ESPECIAL_ABRECHAVES> listaDeComandos() <SIMBOLO_ESPECIAL_FECHACHAVES>
+}
+
+void expressao(): {} {
+    expressaoAritmeticaOuLogica() expressaoLinha()
+}
+
+void expressaoLinha(): {} {
+    (
+        <SIMBOLO_ESPECIAL_OPERADOR_IGUALIGUAL> expressaoAritmeticaOuLogica()
+        | <SIMBOLO_ESPECIAL_OPERADOR_DIFERENTE> expressaoAritmeticaOuLogica()
+        | <SIMBOLO_ESPECIAL_OPERADOR_MENOR> expressaoAritmeticaOuLogica()
+        | <SIMBOLO_ESPECIAL_OPERADOR_MAIOR> expressaoAritmeticaOuLogica()
+        | <SIMBOLO_ESPECIAL_OPERADOR_MENORIGUAL> expressaoAritmeticaOuLogica()
+        | <SIMBOLO_ESPECIAL_OPERADOR_MAIORIGUAL> expressaoAritmeticaOuLogica()
+    )?
+}
+
+void expressaoAritmeticaOuLogica(): {} {
+	termo2() menorPrioridade()
+}
+
+void menorPrioridade(): {} {
+    (
+        <SIMBOLO_ESPECIAL_OPERADOR_MAIS> termo2() menorPrioridade()
+        | <SIMBOLO_ESPECIAL_OPERADOR_MENOS> termo2() menorPrioridade()
+        | <SIMBOLO_ESPECIAL_OPERADOR_OU> termo2() menorPrioridade()
+    )?
+}
+
+void termo2(): {} {
+    termo1() mediaPrioridade()
+}
+
+void mediaPrioridade(): {} {
+    (
+        <SIMBOLO_ESPECIAL_OPERADOR_MULTIPLICACAO> termo1() mediaPrioridade()
+        | <SIMBOLO_ESPECIAL_OPERADOR_DIVISAO> termo1() mediaPrioridade()
+        | <SIMBOLO_ESPECIAL_OPERADOR_DIVISAO_INTEIRA> termo1() mediaPrioridade()
+        | <SIMBOLO_ESPECIAL_OPERADOR_DIVISAO_INTEIRA_RESTO> termo1() mediaPrioridade()
+        | <SIMBOLO_ESPECIAL_OPERADOR_E> termo1() mediaPrioridade()
+    )?
+}
+
+void termo1(): {} {
+    elemento() maiorPrioridade()
+}
+
+void maiorPrioridade(): {} {
+    (<SIMBOLO_ESPECIAL_OPERADOR_POTENTIACAO> elemento() maiorPrioridade())?
+}
+
+void elemento(): {} {
+    <IDENTIFICADORES> indice()
+    | <CONSTANTE_NUMERICA_INTEIRA>
+    | <CONSTANTE_NUMERICA_REAL>
+    | <CONSTANTE_LITERAL>
+    | <PALAVRA_RESERVADA_TRUE>
+    | <PALAVRA_RESERVADA_FALSE>
+    | <SIMBOLO_ESPECIAL_ABREPARENTESES> expressao() <SIMBOLO_ESPECIAL_FECHAPARENTESES>
+    |  <SIMBOLO_ESPECIAL_OPERADOR_NAO> <SIMBOLO_ESPECIAL_ABREPARENTESES>  expressao() <SIMBOLO_ESPECIAL_FECHAPARENTESES>
+}
+
+void indice(): {} {
+    (<SIMBOLO_ESPECIAL_ABRECOLCHETE> <CONSTANTE_NUMERICA_INTEIRA> <SIMBOLO_ESPECIAL_FECHACOLCHETE>)?
+}*/

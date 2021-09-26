@@ -1,0 +1,61 @@
+:- cabecalho
+//comentario de linha
+/* comentario de
+bloco
+*/
+
+program {
+	define {
+		not variable
+			natural is constA 10 .
+			real is constB 10.0 .
+			char is constC, constD 't' .
+			boolean is constE false .
+		variable
+			natural is constF, constG .
+			real is constH .
+			char is constI .
+			boolean is constJ .
+	}
+
+    execute {
+		set 1+1 == 2 to constF .
+		set 1+1 == 2 to constF,constH .
+		get { constG } .
+		get { constG, constH } .
+		put { constJ } .
+		put { constJ, constI } .
+
+		verify 2 % 1 == 0
+			is true {
+				get { constA }.
+				put { constB }.
+			}.
+
+		verify 2 %% 1 == 0
+			is false {
+				get { constA }.
+				put { constB }.
+			}.
+
+		verify 2 / 1 == 0
+			is true {
+				get { constA }.
+				put { constB }.
+			}
+			is false {
+				get { constA }.
+				put { constB }.
+			}.
+
+		loop {
+			get { constA }.
+		} while 1==1 is true .
+
+		while 1+1 == 2 is true do {
+			put {constB} .
+		} .
+   }
+}
+
+mainprogram
