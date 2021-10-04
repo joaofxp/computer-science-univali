@@ -1,0 +1,31 @@
+.input-group-text.form-check-vertices {
+    padding: 5px;
+}
+
+.input-group-text.form-check-vertices .form-check-input {
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.input-conexao {
+    display: flex;
+    justify-content: center;
+}
+
+.input-conexao input[type="text"] {
+    outline: none;
+    background-color: initial;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid lightgray;
+    text-align: center;
+    margin-right: 10px;
+}
+
+button.remover {
+    height: 25px;
+    line-height: 1;
+    padding: 5px;
+}

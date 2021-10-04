@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Grafos Trabalho M1</title>
+
+	<link href="./css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+	<div class="modal fade" id="conexoesModal" tabindex="-1" aria-labelledby="conexoesModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="conexoesModalLabel">Configurações do Grafo</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div>
+						<div class="input-group input-group-sm mb-3">
+							<div class="input-group-text form-check-vertices">
+								<input class="form-check-input mt-0" type="text" id="inputNumeroDeVertices" value="6">
+								<!-- <input class="form-check-input mt-0" type="text" id="inputNumeroDeVertices" value="3"> -->
+							</div>
+							<input type="text" class="form-control" value="Número de Vértices" disabled style="color:#000;font-weight: bold;">
+						</div>
+						<div class="input-group input-group-sm mb-3">
+							<div class="input-group-text">
+								<input class="form-check-input mt-0" type="checkbox" id="inputDirigido">
+							</div>
+							<input type="text" class="form-control" value="Grafo é Dirigido" disabled style="color:#000;font-weight: bold;">
+						</div>
+					</div>
+
+					<hr>
+
+
+					<h5 class="mb-1">Informe as conexões</h5>
+					<small>Vértices são iniciados em 1. Campos em branco são ignorados.</small>
+					<div class="mt-3" id="inputListaDeConexoes">
+						<!-- <div class="input-conexao">
+							<input type="text" placeholder="Origem" value="1">
+							<input type="text" placeholder="Destino" value="2">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="b">
+							<input type="text" placeholder="Destino" value="c">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div> -->
+
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="a">
+							<input type="text" placeholder="Destino" value="b">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="a">
+							<input type="text" placeholder="Destino" value="c">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="a">
+							<input type="text" placeholder="Destino" value="d">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="a">
+							<input type="text" placeholder="Destino" value="e">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="b">
+							<input type="text" placeholder="Destino" value="a">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="b">
+							<input type="text" placeholder="Destino" value="c">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="b">
+							<input type="text" placeholder="Destino" value="e">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="b">
+							<input type="text" placeholder="Destino" value="f">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="c">
+							<input type="text" placeholder="Destino" value="a">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="c">
+							<input type="text" placeholder="Destino" value="b">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="c">
+							<input type="text" placeholder="Destino" value="d">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="c">
+							<input type="text" placeholder="Destino" value="f">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="d">
+							<input type="text" placeholder="Destino" value="a">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="d">
+							<input type="text" placeholder="Destino" value="c">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="d">
+							<input type="text" placeholder="Destino" value="e">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="e">
+							<input type="text" placeholder="Destino" value="a">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="e">
+							<input type="text" placeholder="Destino" value="b">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="e">
+							<input type="text" placeholder="Destino" value="d">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="e">
+							<input type="text" placeholder="Destino" value="f">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="f">
+							<input type="text" placeholder="Destino" value="b">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="f">
+							<input type="text" placeholder="Destino" value="c">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Origem" value="f">
+							<input type="text" placeholder="Destino" value="e">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+
+					</div>
+
+					<br>
+
+					<div class="text-center">
+						<button class="btn btn-secondary" type="button" onclick="adicionarConexao()">+</button>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+					<button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="atualizarGrafo()">Salvar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<main>
+		<div class="container">
+			<header class="d-flex justify-content-center py-1">
+				<ul class="nav nav-pills">
+					<li class="nav-item">
+						<a class="nav-link">
+							Trabalho Grafos M1.2 - João Francisco
+						</a>
+					</li>
+				</ul>
+			</header>
+
+			<div class="row">
+				<div class="col">
+					<button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#conexoesModal">
+						Criar/Editar Grafo
+					</button>
+					<button type="button" class="btn btn-primary float-end" onclick="colorirGrafo()">
+						Colorir Grafo
+					</button>
+				</div>
+			</div>
+
+			<hr>
+
+			<div>
+				<div class="row">
+					<div class="col-3">
+						<div>
+							<h3>Grafo</h3>
+							<p class="mx-3" id="inputGrafo"></p>
+						</div>
+						<div>
+							<hr>
+							<h6 class="d-inline-block">Nº Cromático: </h6>
+							<p class="d-inline-block" id="inputNumeroCromatico"></p>
+						</div>
+						<div>
+							<hr>
+							<h6 class="d-inline-block">Grafo Planar: </h6>
+							<p class="d-inline-block" id="inputGrafoPlanar"></p>
+						</div>
+
+					</div>
+					<div class="col-6">
+						<h3>Grafo Desenhado</h3>
+						<p id="inputGrafoDesenhado"></p>
+					</div>
+					<!-- Buscar No Grafo -->
+					<div class="col-3">
+						<h5>Buscar no grafo</h5>
+
+						<div class="form-floating">
+							<select class="form-select" id="inputTipoBusca">
+								<option value="DFS">DFS - Depth First Search</option>
+								<option value="BFS">BFS - Breadth First Search</option>
+							</select>
+							<label for="inputTipoBusca">Algoritmo de busca</label>
+						</div>
+
+						<small>Origem e Destino são opcionais</small>
+
+						<div class="mt-3 input-conexao">
+							<input type="text" placeholder="Origem" id="inputBuscarGrafoOrigem" value="1">
+							<input type="text" placeholder="Destino" id="inputBuscarGrafoDestino">
+						</div>
+
+						<br>
+
+						<button type="button" class="btn btn-secondary" onclick="realizarBusca()">
+							Buscar
+						</button>
+						<br>
+						<br>
+						<h6>Caminho percorrido:</h6>
+						<p id="inputCaminhoPercorrido"></p>
+
+						<button type="button" class="btn btn-secondary" onclick="converterCaminhoParaLetra()">
+							Converter caminho para letra
+						</button>
+
+						<p class="my-3" id="inputCaminhoPercorridoLetra"></p>
+						<hr>
+
+						<h5>Verificar conectividade</h5>
+
+						<button type="button" class="btn btn-secondary" onclick="verificarConectividade()">
+							Verificar
+						</button>
+
+						<br>
+						<br>
+
+						<h6>Resultado:</h6>
+
+						<p id="inputResultado"></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="./js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="./js/raphael-min.js"></script>
+	<script src="./js/dracula_graffle.js"></script>
+	<script src="./js/dracula_graph.js"></script>
+
+	<script src="./js/app.js"></script>
+</body>
+
+</html>

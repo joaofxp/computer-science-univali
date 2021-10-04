@@ -1,0 +1,9 @@
+Fazer um programa que implemente o algoritmo de coloração apresentado em aula e aplique o teorema de Euler para verificar se o grafo é planar. O programa deve permitir que o usuário informe os dados do grafo, o mesmo deve ser montado (desenhado) e ter seus vértices coloridos com o menor número de cores possível, seguindo algoritmo apresentado.
+
+Requisitos:
+
+- permitir que o usuário altere o grafo a qualqeur momento, incluindo ou excluindo vertices e arestas.
+- Mostra se o grafo é planar, caso seja, qual o número de regioões quando desenhado na forma plana.
+- Colorir o grafo (desenho) e informar qual o número cromático.
+
+Obs.: O trabalho deve ser postado na atividades do material didático e apresentado no dia da entrega, demonstrando seu funcionamento e como foi implementado.
