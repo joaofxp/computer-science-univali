@@ -162,6 +162,8 @@ function reiniciarGrafo() {
     inputCaminhoPercorrido.innerText = "";
     inputCaminhoPercorridoLetra.innerText = "";
     inputResultado.innerText = "";
+    inputNumeroCromatico.innerText = "";
+    inputGrafoPlanar.innerText = "";
 
     grafoDesenhado = new Graph();
 
@@ -528,10 +530,10 @@ function colorirGrafo() {
         // return;
     }
 
-    if (!verificarSeGrafoPlanar()) {
-        alert("Não é um grafo planar, verifique.");
-        // return;
-    }
+    // if (!verificarSeGrafoPlanar()) {
+    //     alert("Não é um grafo planar, verifique.");
+    //     // return;
+    // }
 
     function marcarCoresIndisponiveis(contador) {
         for (let vertice of listaVerticesAdjacentes[contador]) {
@@ -583,10 +585,45 @@ function colorirGrafo() {
 
     atualizarGrafo();
 
+    verificarSeGrafoPlanar();
     inputNumeroCromatico.innerText = numeroCromatico;
 }
 
 function verificarSeGrafoPlanar() {
+    function verificaSeExisteCicloDeTres(
+        verticeBuscar = 0,
+        visitados = new Array(vertices).fill(false)
+    ) {
+        visitados[verticeBuscar] = true;
+
+        getListaDeAdjacencias();
+
+        existeCicloDeTres = false;
+
+        for (const i of listaVerticesAdjacentes[verticeBuscar]) {
+            if (!visitados[i]) {
+                visitados[i] = true;
+
+                for (const j of listaVerticesAdjacentes[i]) {
+                    if (!visitados[j] && j !== verticeBuscar) {
+                        for (const k of listaVerticesAdjacentes[j]) {
+                            if (visitados[k] && k === verticeBuscar) {
+                                existeCicloDeTres = true;
+                                return existeCicloDeTres;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return existeCicloDeTres;
+    }
+
+    function getRegioes() {
+        return arestas + 2 - vertices;
+    }
+
     const regioes = getRegioes();
     let isGrafoPlanar = false;
 
@@ -616,40 +653,6 @@ function verificarSeGrafoPlanar() {
     inputGrafoPlanar.innerText = isGrafoPlanar ? "Sim" : "Não";
 
     return isGrafoPlanar;
-}
-
-function verificaSeExisteCicloDeTres(
-    verticeBuscar = 0,
-    visitados = new Array(vertices).fill(false)
-) {
-    visitados[verticeBuscar] = true;
-
-    getListaDeAdjacencias();
-
-    existeCicloDeTres = false;
-
-    for (const i of listaVerticesAdjacentes[verticeBuscar]) {
-        if (!visitados[i]) {
-            visitados[i] = true;
-
-            for (const j of listaVerticesAdjacentes[i]) {
-                if (!visitados[j] && j !== verticeBuscar) {
-                    for (const k of listaVerticesAdjacentes[j]) {
-                        if (visitados[k] && k === verticeBuscar) {
-                            existeCicloDeTres = true;
-                            return existeCicloDeTres;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return existeCicloDeTres;
-}
-
-function getRegioes() {
-    return arestas + 2 - vertices;
 }
 
 colorirGrafo();
