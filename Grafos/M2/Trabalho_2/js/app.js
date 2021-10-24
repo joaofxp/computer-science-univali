@@ -5,6 +5,11 @@ const inputSituacaoFinal = document.querySelectorAll(
     "table#inputSituacaoFinal tbody tr td input"
 );
 const inputTipoBusca = document.getElementById("inputTipoBusca");
+const inputResolver = document.getElementById("inputResolver");
+const inputProximoPasso = document.getElementById("inputProximoPasso");
+const inputAplicarSituacaoFinal = document.getElementById(
+    "inputAplicarSituacaoFinal"
+);
 
 const valorNulo = 0;
 
@@ -23,3 +28,18 @@ function aplicarComoNovaSituacaoFinal() {
         elemento.value = novoValor;
     });
 }
+
+function resolver() {
+    Array.from(inputSituacaoInicial).forEach((elemento) => {
+        elemento.classList.add("passosCarregados");
+        elemento.disabled = "true";
+    });
+
+    inputResolver.disabled = "true";
+    inputTipoBusca.disabled = "true";
+    inputAplicarSituacaoFinal.disabled = "true";
+
+    inputProximoPasso.disabled = false;
+}
+
+resolver();

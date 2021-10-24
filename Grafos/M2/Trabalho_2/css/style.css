@@ -2,3 +2,7 @@ table tr td input {
     /* border-radius: 0px !important; */
     text-align: center;
 }
+
+.passosCarregados:disabled {
+    background-color: lightgreen;
+}
