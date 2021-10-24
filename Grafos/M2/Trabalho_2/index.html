@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Grafos Trabalho M2</title>
+
+	<link href="./css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+	<main>
+		<div class="container">
+			<header class="d-flex justify-content-center py-1">
+				<ul class="nav nav-pills">
+					<li class="nav-item">
+						<a class="nav-link">
+							Trabalho Grafos - João Francisco
+						</a>
+					</li>
+				</ul>
+			</header>
+
+			<br>
+
+			<div class="row">
+				<div class="col-4">
+					<h6>Situação inicial</h6>
+
+					<table class="mx-3" id="inputSituacaoInicial">
+						<tbody>
+							<tr>
+								<td>
+									<input type="text" class="form-control" value="8">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="7">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="6">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" class="form-control" value="5">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="4">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" class="form-control" value="3">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="2">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="1">
+								</td>
+							</tr>
+							</tbod>
+					</table>
+
+					<!-- <table class="mx-3" id="inputSituacaoInicial">
+						<tr>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+							<td>
+								<input type="text" class="form-control">
+							</td>
+						</tr>
+					</table> -->
+				</div>
+				<div class="col-4">
+					<h6>Configurações</h6>
+
+					<div class="form-floating">
+						<select class="form-select form-select-sm" id="inputTipoBusca">
+							<option value="DFS">DFS - Depth First Search</option>
+							<option value="BFS">BFS - Breadth First Search</option>
+						</select>
+						<label for="inputTipoBusca" class="px-2">Algoritmo de busca</label>
+					</div>
+
+					<div class="d-flex flex-column gap-3 my-3">
+						<button type="button" class="btn btn-primary btn-sm">
+							Resolver
+						</button>
+						<button type="button" class="btn btn-success btn-sm" disabled="true">
+							Próximo passo
+						</button>
+						<button type="button" class="btn btn-secondary btn-sm" onclick="aplicarComoNovaSituacaoFinal()">
+							Aplicar como nova situação final
+						</button>
+					</div>
+				</div>
+				<div class="col-4">
+					<h6>Situação final</h6>
+
+					<table class="mx-3" id="inputSituacaoFinal">
+						<tr>
+							<td>
+								<input type="text" class="form-control" value="1" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" value="2" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" value="3" disabled>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" class="form-control" value="8" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" value="" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" value="4" disabled>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" class="form-control" value="7" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" value="6" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" value="5" disabled>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="./js/bootstrap.bundle.min.js"></script>
+	<script src="./js/app.js"></script>
+</body>
+
+</html>
