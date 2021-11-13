@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Grafos Trabalho M3</title>
+
+	<link href="./css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+	<div class="modal fade" id="conexoesModal" tabindex="-1" aria-labelledby="conexoesModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="conexoesModalLabel">Configurações do Grafo</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<h5 class="mb-1">Informe os dados</h5>
+					<small>Insira apenas números. Se mais de um precedente, separe por vírgula.</small>
+					<div class="mt-3" id="inputListaDeConexoes">
+						<!-- <div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div> -->
+						<div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="1" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="10" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="2" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="4" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="1" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="3" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="7" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="1" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="4" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="5" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="3" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="5" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="5" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="2,4" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+						<div class="input-conexao">
+							<input type="text" placeholder="Atividade" value="6" pattern="[0-9]+">
+							<input type="text" placeholder="Duração" value="2" pattern="[0-9]+">
+							<input type="text" placeholder="Precedente" value="3" pattern="[0-9,]+">
+							<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+						</div>
+					</div>
+
+					<br>
+
+					<div class="text-center">
+						<button class="btn btn-secondary" type="button" onclick="adicionarAtividade()">+</button>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+					<button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="atualizarGrafo()">Salvar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<main>
+		<div class="container">
+			<header class="d-flex justify-content-center py-1">
+				<ul class="nav nav-pills">
+					<li class="nav-item">
+						<a class="nav-link">
+							Trabalho Grafos M3 - João Francisco
+						</a>
+					</li>
+				</ul>
+			</header>
+
+			<div class="row">
+				<div class="col">
+					<button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#conexoesModal">
+						Editar dados do grafo
+					</button>
+					<div class="float-end text-center">
+						[Atividade | Duração]
+						<br>
+						[1º Início | 1º Fim]
+						<br>
+						[Último Início | Último Fim]
+					</div>
+				</div>
+			</div>
+
+			<hr>
+
+			<div>
+				<div class="row">
+					<div class="col-12">
+						<h3>Grafo Desenhado</h3>
+						<p id="inputGrafoDesenhado"></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="./js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="./js/raphael-min.js"></script>
+	<script src="./js/dracula_graffle.js"></script>
+	<script src="./js/dracula_graph.js"></script>
+
+	<script src="./js/app.js"></script>
+</body>
+
+</html>

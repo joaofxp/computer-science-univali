@@ -33,6 +33,28 @@
 						<tbody>
 							<tr>
 								<td>
+									<input type="text" class="form-control" value="">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="2">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="3">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" class="form-control" value="1">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="4">
+								</td>
+								<td>
+									<input type="text" class="form-control" value="5">
+								</td>
+							</tr>
+							<tr>
+								<td>
 									<input type="text" class="form-control" value="8">
 								</td>
 								<td>
@@ -42,30 +64,19 @@
 									<input type="text" class="form-control" value="6">
 								</td>
 							</tr>
-							<tr>
-								<td>
-									<input type="text" class="form-control" value="5">
-								</td>
-								<td>
-									<input type="text" class="form-control" value="">
-								</td>
-								<td>
-									<input type="text" class="form-control" value="4">
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<input type="text" class="form-control" value="3">
-								</td>
-								<td>
-									<input type="text" class="form-control" value="2">
-								</td>
-								<td>
-									<input type="text" class="form-control" value="1">
-								</td>
-							</tr>
 							</tbod>
 					</table>
+
+					<hr>
+
+
+					<div id="inputPassosDiv" style="display: none;">
+						<h6>Quantidade de passos:</h6>
+						<p id="inputPassosQuantidade"> </p>
+
+						<h6>Passo atual:</h6>
+						<p id="inputPassoAtual"> </p>
+					</div>
 
 					<!-- <table class="mx-3" id="inputSituacaoInicial">
 						<tr>
@@ -108,7 +119,7 @@
 
 					<div class="form-floating">
 						<select class="form-select form-select-sm" id="inputTipoBusca">
-							<option value="DFS">DFS - Depth First Search</option>
+							<!-- <option value="DFS">DFS - Depth First Search</option> -->
 							<option value="BFS">BFS - Breadth First Search</option>
 						</select>
 						<label for="inputTipoBusca" class="px-2">Algoritmo de busca</label>
@@ -118,7 +129,7 @@
 						<button type="button" class="btn btn-primary btn-sm" id="inputResolver" onclick="resolver()">
 							Resolver
 						</button>
-						<button type="button" class="btn btn-success btn-sm" disabled="true" id="inputProximoPasso">
+						<button type="button" class="btn btn-success btn-sm" disabled="true" id="inputProximoPasso" onclick="proximoPasso()">
 							Próximo passo
 						</button>
 						<button type="button" class="btn btn-secondary btn-sm" id="inputAplicarSituacaoFinal" onclick="aplicarComoNovaSituacaoFinal()">
