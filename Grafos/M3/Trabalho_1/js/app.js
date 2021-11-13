@@ -31,6 +31,7 @@ function renderer(r, n) {
             r.rect(n.posicaoX, n.posicaoY, 60, 50).attr({
                 fill: n.fill,
                 "stroke-width": 2,
+                stroke: n.stroke || "#000",
                 r: 5,
                 "fill-opacity": "0.2",
             })
@@ -347,6 +348,7 @@ function atualizarGrafo() {
             posicaoX: atividade.getPosicaoX(),
             posicaoY: atividade.getPosicaoY(),
             folga: atividade.getFolga(),
+            stroke: atividade.getFolga() === 0 ? "red" : "",
             render: renderer,
         });
     });
