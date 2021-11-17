@@ -11,95 +11,6 @@ const nodoFimNome = "nodoFim";
 
 let atividades = [];
 
-function renderer(r, n) {
-    var label = r.text(n.posicaoX + 30, n.posicaoY + 25, n.label).attr({
-        fill: "#000",
-        "font-size": "12px",
-        "font-weight": "bold",
-        "fill-opacity": "1",
-    });
-    var folga = r.text(n.posicaoX + 30, n.posicaoY + 60, n.folga || "0").attr({
-        fill: "#000",
-        "font-size": "13px",
-        "font-weight": "bold",
-        "fill-opacity": "1",
-    });
-
-    var set = r
-        .set()
-        .push(
-            r.rect(n.posicaoX, n.posicaoY, 60, 50).attr({
-                fill: n.fill,
-                "stroke-width": 2,
-                stroke: n.stroke || "#000",
-                r: 5,
-                "fill-opacity": "0.2",
-            })
-        )
-        .push(folga)
-        .push(label);
-
-    return set;
-}
-
-function inicializar() {
-    configurarGrafo();
-    desenharGrafo();
-}
-
-function configurarGrafo() {
-    inputGrafoDesenhado.innerHTML = "";
-    grafoDesenhado = new Graph();
-
-    grafoDesenhado.addNode(nodoInicioNome, {
-        label: "Inicio",
-        fill: "gray",
-        posicaoX: posicaoXNodoInicio,
-        posicaoY: posicaoYNodoInicio,
-        folga: ".",
-        render: renderer,
-    });
-
-    grafoDesenhado.addNode(nodoFimNome, {
-        label: "Fim",
-        fill: "gray",
-        posicaoX: posicaoXNodoFim,
-        posicaoY: posicaoYNodoFim,
-        folga: ".",
-        render: renderer,
-    });
-
-    var layouter = new Graph.Layout.Spring(grafoDesenhado);
-
-    layouter.layout();
-}
-
-function desenharGrafo() {
-    var renderer = new Graph.Renderer.Raphael(
-        inputGrafoDesenhado,
-        grafoDesenhado,
-        1100,
-        400
-    );
-    renderer.draw();
-}
-
-function removerConexao(elemento) {
-    elemento.parentElement.remove();
-}
-
-function adicionarAtividade() {
-    const inputConexao = `
-				<div class="input-conexao">
-					<input type="text" placeholder="Atividade" value="" pattern="[0-9]+">
-					<input type="text" placeholder="Duração" value="" pattern="[0-9]+">
-					<input type="text" placeholder="Precedente" value="" pattern="[0-9]+">
-					<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
-				</div>`;
-
-    inputListaDeConexoes.insertAdjacentHTML("beforeend", inputConexao);
-}
-
 class Atividade {
     constructor(id, duracao, precedente) {
         this.id = id;
@@ -176,6 +87,96 @@ class Atividade {
     setFolga(folga) {
         this.folga = folga;
     }
+}
+
+function renderer(r, n) {
+    var label = r.text(n.posicaoX + 30, n.posicaoY + 25, n.label).attr({
+        fill: "#000",
+        "font-size": "12px",
+        "font-weight": "bold",
+        "fill-opacity": "1",
+    });
+
+    var folga = r.text(n.posicaoX + 30, n.posicaoY + 60, n.folga || "0").attr({
+        fill: "#000",
+        "font-size": "13px",
+        "font-weight": "bold",
+        "fill-opacity": "1",
+    });
+
+    var set = r
+        .set()
+        .push(
+            r.rect(n.posicaoX, n.posicaoY, 60, 50).attr({
+                fill: n.fill,
+                "stroke-width": 2,
+                stroke: n.stroke || "#000",
+                r: 5,
+                "fill-opacity": "0.2",
+            })
+        )
+        .push(folga)
+        .push(label);
+
+    return set;
+}
+
+function inicializar() {
+    configurarGrafo();
+    desenharGrafo();
+}
+
+function configurarGrafo() {
+    inputGrafoDesenhado.innerHTML = "";
+    grafoDesenhado = new Graph();
+
+    grafoDesenhado.addNode(nodoInicioNome, {
+        label: "Inicio",
+        fill: "gray",
+        posicaoX: posicaoXNodoInicio,
+        posicaoY: posicaoYNodoInicio,
+        folga: ".",
+        render: renderer,
+    });
+
+    grafoDesenhado.addNode(nodoFimNome, {
+        label: "Fim",
+        fill: "gray",
+        posicaoX: posicaoXNodoFim,
+        posicaoY: posicaoYNodoFim,
+        folga: ".",
+        render: renderer,
+    });
+
+    var layouter = new Graph.Layout.Spring(grafoDesenhado);
+
+    layouter.layout();
+}
+
+function desenharGrafo() {
+    var renderer = new Graph.Renderer.Raphael(
+        inputGrafoDesenhado,
+        grafoDesenhado,
+        1100,
+        600
+    );
+    renderer.draw();
+}
+
+function removerConexao(elemento) {
+    elemento.parentElement.remove();
+}
+
+function adicionarAtividade() {
+    const inputConexao = `
+				<div class="input-conexao">
+					<input type="text" placeholder="Atividade" value="" pattern="[0-9]+">
+					<input type="text" placeholder="Duração" value="" pattern="[0-9]+">
+					<input type="text" placeholder="Precedente" value="" pattern="[0-9,]+">
+					<button type="button" class="btn btn-sm btn-danger mt-1 remover" onclick="removerConexao(this)">X</button>
+				</div>`;
+
+    inputListaDeConexoes.insertAdjacentHTML("beforeend", inputConexao);
 }
 
 function getAtividadePorId(id) {
@@ -270,6 +271,7 @@ function atualizarGrafo() {
 
     let maiorPrimeiroTempoFim = 0;
 
+    //saber quais sao as atividades finais
     atividadesFinais = atividades.filter((atividade) => {
         if (atividade.getSeguinte() === 0) {
             maiorPrimeiroTempoFim = Math.max(
@@ -286,6 +288,7 @@ function atualizarGrafo() {
             precedentes = atividade.getPrecedente().split(",");
 
             let menorPrimeiroTempoFim = 9999;
+
             precedentes.forEach((precedenteId) => {
                 let _atividade = getAtividadePorId(precedenteId);
                 let _seguintes = _atividade.getSeguinte();
@@ -306,7 +309,10 @@ function atualizarGrafo() {
                 let _atividade = getAtividadePorId(precedenteId);
                 _atividade.setUltimoTempoFim(menorPrimeiroTempoFim);
                 _atividade.setUltimoTempoInicio(
-                    _atividade.getUltimoTempoFim() - _atividade.getDuracao()
+                    _atividade.getUltimoTempoFim() - _atividade.getDuracao() > 0
+                        ? _atividade.getUltimoTempoFim() -
+                              _atividade.getDuracao()
+                        : 0
                 );
 
                 if (_atividade.getPrecedente()) {
@@ -329,11 +335,11 @@ function atualizarGrafo() {
 
     //calcular folgas
     atividades.forEach((atividade) => {
-        console.log(
-            atividade.getUltimoTempoFim() - atividade.getPrimeiroTempoFim()
-        );
         atividade.setFolga(
-            atividade.getUltimoTempoFim() - atividade.getPrimeiroTempoFim()
+            atividade.getUltimoTempoFim() - atividade.getPrimeiroTempoFim() > 0
+                ? atividade.getUltimoTempoFim() -
+                      atividade.getPrimeiroTempoFim()
+                : 0
         );
     });
 
@@ -391,6 +397,10 @@ function getListaDeAtividades() {
             !dados[1].checkValidity() ||
             !dados[2].checkValidity()
         ) {
+            console.log(!dados[0].checkValidity(), dados[0].value);
+            console.log(!dados[1].checkValidity(), dados[1].value);
+            console.log(!dados[2].checkValidity(), dados[2].value);
+
             alert("há um valor inválido, verifique.");
             return false;
         }
